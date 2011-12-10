@@ -7,6 +7,7 @@ h2. Initiating Your Login Session
 Before making requests to any of the methods of the Reddit SDK, you first need to authenticate by calling the login method with your username and password.  This will populate your user hash and session data.
 <notextile>
 <pre>
+require_once("reddit.php");
 $reddit = new reddit();
 $reddit->login("USERNAME", "PASSWORD");
 </pre>
@@ -92,5 +93,26 @@ $response = $reddit->addComment("t3_jp2k7", "Hey!\n\n**[search!](http://www.goog
 <notextile>
 <pre>
 $response = $reddit->addVote("t3_n6ocq", 1);
+</pre>
+</notextile>
+
+*Set or Clear a User's Flair in a Subreddit*
+<notextile>
+<pre>
+$response = $reddit->setFlair("motorcycles", "jcleblanc", "ZZR600", "kawasaki");
+</pre>
+</notextile>
+
+*Download the Flair Assignments of a Subreddit*
+<notextile>
+<pre>
+$response = $reddit->getFlairList("motorcycles", 100, "t2_39qab", "t2_39qab");
+</pre>
+</notextile>
+
+*Post a CSV File of Flair Settings to a Subreddit*
+<notextile>
+<pre>
+$response = $reddit->setFlairCSV("motorcycles", "jcleblanc,ZZR600,kawasaki\n...");
 </pre>
 </notextile>
