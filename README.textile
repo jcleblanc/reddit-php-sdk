@@ -1,0 +1,93 @@
+h1. Reddit PHP SDK
+The Reddit SDK is a wrapper around the Reddit APIs: https://github.com/reddit/reddit/wiki/API
+
+h2. Initiating Your Login Session
+Before making requests to any of the methods of the Reddit SDK, you first need to authenticate by calling the login method with your username and password.  This will populate your user hash and session data.
+<notextile>
+<pre>
+$reddit = new reddit();
+$reddit->login("USERNAME", "PASSWORD");
+</pre>
+</notextile>
+
+h2. SDK Methods
+Once you are authenticated, you may then make requests to any of the methods in the SDK.  
+
+*Creating a New Story*
+<notextile>
+<pre>
+$title = "British coffee-powered car breaks world record";
+$link = "http://www.extremetech.com/extreme/97287-british-coffee-powered-car-breaks-world-record";
+$response = $reddit->createStory($title, $link);
+</pre>
+</notextile>
+
+*Get User Information*
+<notextile>
+<pre>
+$userData = $reddit->getUser();
+</pre>
+</notextile>
+
+*Get User Subscriptions*
+<notextile>
+<pre>
+$subscriptions = $reddit->getSubscriptions();
+</pre>
+</notextile>
+
+*Get Page Information*
+<notextile>
+<pre>
+$pageInfo = $reddit->getPageInfo("http://i.imgur.com/QxdCd.jpg");
+</pre>
+</notextile>
+
+*Save Story*
+<notextile>
+<pre>
+$response = $reddit->savePost("t3_n6ocq"));
+</pre>
+</notextile>
+
+*Unsave Story*
+<notextile>
+<pre>
+$response = $reddit->unsavePost("t3_n6ocq");
+</pre>
+</notextile>
+
+*Hide Post*
+<notextile>
+<pre>
+$response = $reddit->hidePost("t3_n6ocq"));
+</pre>
+</notextile>
+
+*Unhide Post*
+<notextile>
+<pre>
+$response = $reddit->unhidePost("t3_n6ocq");
+</pre>
+</notextile>
+
+*Share Post*
+<notextile>
+<pre>
+$response = $reddit->sharePost("t3_jp2k7", "Jon", "me@mysite.com", "you@yoursite.com", "Check out this post");
+</pre>
+</notextile>
+
+*Add Comment*
+<notextile>
+<pre>
+$response = $reddit->addComment("t3_jp2k7", "Hey!\n\n**[search!](http://www.google.com/)**");
+</pre>
+</notextile>
+
+*Add Vote*
+<notextile>
+<pre>
+$response = $reddit->addVote("t3_n6ocq", 1);
+</pre>
+</notextile>

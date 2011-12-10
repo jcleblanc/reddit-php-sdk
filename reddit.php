@@ -28,11 +28,11 @@ class reddit{
         $response = $this->runCurl($urlLogin, $postData);
         
         if (strlen($response->errors) > 0){
-            echo "login error";    
+            return "login error";    
         } else {
             $this->modHash = $response->json->data->modhash;   
             $this->session = $response->json->data->cookie;
-            echo $this->modHash;
+            return $this->modHash;
         }
     }
     
