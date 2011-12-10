@@ -1,7 +1,9 @@
 h1. Reddit PHP SDK
+
 The Reddit SDK is a wrapper around the Reddit APIs: https://github.com/reddit/reddit/wiki/API
 
 h2. Initiating Your Login Session
+
 Before making requests to any of the methods of the Reddit SDK, you first need to authenticate by calling the login method with your username and password.  This will populate your user hash and session data.
 <notextile>
 <pre>
@@ -11,6 +13,7 @@ $reddit->login("USERNAME", "PASSWORD");
 </notextile>
 
 h2. SDK Methods
+
 Once you are authenticated, you may then make requests to any of the methods in the SDK.  
 
 *Creating a New Story*
