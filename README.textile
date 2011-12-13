@@ -22,7 +22,7 @@ Once you are authenticated, you may then make requests to any of the methods in 
 <pre>
 $title = "British coffee-powered car breaks world record";
 $link = "http://www.extremetech.com/extreme/97287-british-coffee-powered-car-breaks-world-record";
-$subreddit = "programming"
+$subreddit = "technology"
 $response = $reddit->createStory($title, $link, $subreddit);
 </pre>
 </notextile>
