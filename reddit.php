@@ -48,8 +48,7 @@ class reddit{
         $urlSubmit = "{$this->apiHost}/submit";
         
         //data checks and pre-setup
-        if ($title == null){ return null; }
-        if ($subreddit == null){ $subreddit = "reddit.com"; }
+        if ($title == null || $subreddit == null){ return null; }
         $kind = ($link == null) ? "self" : "link";
         
         $postData = sprintf("uh=%s&kind=%s&sr=%s&title=%s&r=%s&renderstyle=html",
