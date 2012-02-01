@@ -27,7 +27,7 @@ class reddit{
                             $password);
         $response = $this->runCurl($urlLogin, $postData);
         
-        if (strlen($response->json->errors) > 0){
+        if (count($response->json->errors) > 0){
             return "login error";    
         } else {
             $this->modHash = $response->json->data->modhash;   
