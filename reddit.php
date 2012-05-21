@@ -13,13 +13,13 @@ class reddit{
     private $session = null;
     
     /***************************************************************************
-     * Function: Login
-     * Description: Logs user into Reddit and stores session data
+     * Function: Class Constructor
+     * Description: Construct the class and simultaneously log a user in.
      * API: https://github.com/reddit/reddit/wiki/API%3A-login
      * Params: username (string): The username to be logged into
      *         password (string): The password to be used to log in
      **************************************************************************/
-    public function login($username = null, $password = null){
+    public function __construct($username = null, $password = null){
         $urlLogin = "{$this->apiHost}/login/$username";
         
         $postData = sprintf("api_type=json&user=%s&passwd=%s",
