@@ -89,6 +89,24 @@ class reddit{
     }
     
     /***************************************************************************
+     * Function: Get Listing
+     * Description: Get the listing of submissions from a subreddit
+     * API: http://www.reddit.com/dev/api#GET_listing
+     * Params: sr (String): THe subreddit name. Ex: technology, limit (integer): The number of posts to gather.
+     **************************************************************************/
+     public function getListing($sr, $limit = 5)
+     {
+         $limit = (isset($limit)) ? "?limit=".$limit : "";
+         if($sr == 'home' || $sr == 'reddit' || !isset($sr))
+         {
+             $urlListing = "http://www.reddit.com/.json{$limit}";
+         }else{
+             $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
+         }
+         return $this->runCurl($urlListing);
+     }
+    
+    /***************************************************************************
      * Function: Get Page Information
      * Description: Get information on a URLs submission on Reddit
      * API: https://github.com/reddit/reddit/wiki/API%3A-info.json
