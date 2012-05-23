@@ -13,13 +13,13 @@ class reddit{
     private $session = null;
     
     /***************************************************************************
-     * Function: Login
-     * Description: Logs user into Reddit and stores session data
+     * Function: Class Constructor
+     * Description: Construct the class and simultaneously log a user in.
      * API: https://github.com/reddit/reddit/wiki/API%3A-login
      * Params: username (string): The username to be logged into
      *         password (string): The password to be used to log in
      **************************************************************************/
-    public function login($username = null, $password = null){
+    public function __construct($username = null, $password = null){
         $urlLogin = "{$this->apiHost}/login/$username";
         
         $postData = sprintf("api_type=json&user=%s&passwd=%s",
@@ -87,6 +87,24 @@ class reddit{
         $urlSubscriptions = "http://www.reddit.com/reddits/mine.json";
         return $this->runCurl($urlSubscriptions);
     }
+    
+    /***************************************************************************
+     * Function: Get Listing
+     * Description: Get the listing of submissions from a subreddit
+     * API: http://www.reddit.com/dev/api#GET_listing
+     * Params: sr (String): THe subreddit name. Ex: technology, limit (integer): The number of posts to gather.
+     **************************************************************************/
+     public function getListing($sr, $limit = 5)
+     {
+         $limit = (isset($limit)) ? "?limit=".$limit : "";
+         if($sr == 'home' || $sr == 'reddit' || !isset($sr))
+         {
+             $urlListing = "http://www.reddit.com/.json{$limit}";
+         }else{
+             $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
+         }
+         return $this->runCurl($urlListing);
+     }
     
     /***************************************************************************
      * Function: Get Page Information
