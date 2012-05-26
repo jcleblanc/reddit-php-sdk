@@ -8,8 +8,7 @@ Before making requests to any of the methods of the Reddit SDK, you first need t
 <notextile>
 <pre>
 require_once("reddit.php");
-$reddit = new reddit();
-$reddit->login("USERNAME", "PASSWORD");
+$reddit = new reddit("USERNAME", "PASSWORD");
 </pre>
 </notextile>
 
@@ -73,6 +72,13 @@ $response = $reddit->hidePost("t3_n6ocq"));
 <notextile>
 <pre>
 $response = $reddit->unhidePost("t3_n6ocq");
+</pre>
+</notextile>
+
+*Get Posts*
+<notextile>
+<pre>
+$response = $reddit->getListing("technology", 5);
 </pre>
 </notextile>
 
