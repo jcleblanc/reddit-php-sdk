@@ -8,7 +8,8 @@
  *   $user = $reddit->getUser();
  ******************************************************************************/
 class reddit{
-    private $apiHost = "http://www.reddit.com/api";
+    //private $apiHost = "http://www.reddit.com/api";
+    private $apiHost = "https://ssl.reddit.com/api";
     private $modHash = null;
     private $session = null;
     
