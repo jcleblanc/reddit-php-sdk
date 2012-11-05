@@ -82,6 +82,18 @@ $response = $reddit->getListing("technology", 5);
 </pre>
 </notextile>
 
+*Get Raw JSON*
+<notextile>
+<pre>
+$response = $reddit->getRawJSON("/r/funny/comments/12ma0a/this_guy_showed_up_at_our_party_last_night_didnt/");
+</pre>
+<pre>
+//get the JSON for the top technology post
+$response1 = $reddit->getListing("technology", 1);
+$response2 = $reddit->getRawJSON($response1->data->children[0)]->data->permalink);
+</pre>
+</notextile>
+
 *Share Post*
 <notextile>
 <pre>

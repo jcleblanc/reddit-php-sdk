@@ -122,6 +122,17 @@ class reddit{
         return $response;
     }
     
+     /***************************************************************************
+     * Function: Get Raw JSON
+     * Description: Get Raw JSON for a reddit permalink
+     * Params: permalink (string): permalink to get raw JSON for
+     **************************************************************************/
+     public function getRawJSON($permalink)
+     {
+         $urlListing = "http://www.reddit.com/{$permalink}.json";
+         return $this->runCurl($urlListing);
+     }  
+         
     /***************************************************************************
      * Function: Save Post
      * Description: Save a post to your account.  Save feeds:
