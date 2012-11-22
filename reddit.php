@@ -1,25 +1,27 @@
 <?php
-/*******************************************************************************
- * Class Name: Reddit PHP SDK
- * Description: Provides a SDK for accessing the Reddit APIs
- * Useage: 
- *   $reddit = new reddit();
- *   $reddit->login("USERNAME", "PASSWORD");
- *   $user = $reddit->getUser();
- ******************************************************************************/
+/**
+*ÊReddit PHP SDK
+*
+* Provides a SDK for accessing the Reddit APIs
+* Useage: 
+*   $reddit = new reddit();
+*   $reddit->login("USERNAME", "PASSWORD");
+*   $user = $reddit->getUser();
+*/
 class reddit{
     //private $apiHost = "http://www.reddit.com/api";
     private $apiHost = "https://ssl.reddit.com/api";
     private $modHash = null;
     private $session = null;
     
-    /***************************************************************************
-     * Function: Class Constructor
-     * Description: Construct the class and simultaneously log a user in.
-     * API: https://github.com/reddit/reddit/wiki/API%3A-login
-     * Params: username (string): The username to be logged into
-     *         password (string): The password to be used to log in
-     **************************************************************************/
+    /**
+    *ÊClass Constructor
+    *
+    * Construct the class and simultaneously log a user in.
+    * @link https://github.com/reddit/reddit/wiki/API%3A-login
+    * @param string $username The username to be logged into
+    * @param string $password The password to be used to log in
+    */
     public function __construct($username = null, $password = null){
         $urlLogin = "{$this->apiHost}/login/$username";
         
@@ -37,14 +39,15 @@ class reddit{
         }
     }
     
-    /***************************************************************************
-     * Function: Create New Story
-     * Description: Creates a new story on a particular subreddit
-     * API: https://github.com/reddit/reddit/wiki/API%3A-submit
-     * Params: title (string): The title of the story 
-     *         link (string): The link that the story should forward to
-     *         subreddit (string): The subreddit where the story should be added
-     **************************************************************************/
+    /**
+    *ÊCreate new story
+    *
+    * Creates a new story on a particular subreddit
+    * @link https://github.com/reddit/reddit/wiki/API%3A-submit
+    * @param string $title The title of the story
+    * @param string $link The link that the story should forward to
+    * @param string $subreddit The subreddit where the story should be added
+    */
     public function createStory($title = null, $link = null, $subreddit = null){
         $urlSubmit = "{$this->apiHost}/submit";
         
@@ -69,50 +72,52 @@ class reddit{
         }
     }
     
-    /***************************************************************************
-     * Function: Get user
-     * Description: Get data for the current user
-     * API: https://github.com/reddit/reddit/wiki/API%3A-me.json
-     **************************************************************************/
+    /**
+    *ÊGet user
+    *
+    * Get data for the current user
+    * @link https://github.com/reddit/reddit/wiki/API%3A-me.json
+    */
     public function getUser(){
         $urlUser = "{$this->apiHost}/me.json";
         return $this->runCurl($urlUser);
     }
     
-    /***************************************************************************
-     * Function: Get User Subscriptions
-     * Description: Get the subscriptions that the user is subscribed to
-     * API: https://github.com/reddit/reddit/wiki/API%3A-mine.json
-     **************************************************************************/
+    /**
+    *ÊGet user subscriptions
+    *
+    * Get the subscriptions that the user is subscribed to
+    * @link https://github.com/reddit/reddit/wiki/API%3A-mine.json
+    */
     public function getSubscriptions(){
         $urlSubscriptions = "http://www.reddit.com/reddits/mine.json";
         return $this->runCurl($urlSubscriptions);
     }
     
-    /***************************************************************************
-     * Function: Get Listing
-     * Description: Get the listing of submissions from a subreddit
-     * API: http://www.reddit.com/dev/api#GET_listing
-     * Params: sr (String): THe subreddit name. Ex: technology, limit (integer): The number of posts to gather.
-     **************************************************************************/
-     public function getListing($sr, $limit = 5)
-     {
-         $limit = (isset($limit)) ? "?limit=".$limit : "";
-         if($sr == 'home' || $sr == 'reddit' || !isset($sr))
-         {
-             $urlListing = "http://www.reddit.com/.json{$limit}";
-         }else{
-             $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
-         }
-         return $this->runCurl($urlListing);
-     }
+    /**
+    *ÊGet listing
+    *
+    * Get the listing of submissions from a subreddit
+    * @link http://www.reddit.com/dev/api#GET_listing
+    * @param string $sr The subreddit name. Ex: technology, limit (integer): The number of posts to gather
+    */
+    public function getListing($sr, $limit = 5){
+        $limit = (isset($limit)) ? "?limit=".$limit : "";
+        if($sr == 'home' || $sr == 'reddit' || !isset($sr)){
+            $urlListing = "http://www.reddit.com/.json{$limit}";
+        } else {
+            $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
+        }
+        return $this->runCurl($urlListing);
+    }
     
-    /***************************************************************************
-     * Function: Get Page Information
-     * Description: Get information on a URLs submission on Reddit
-     * API: https://github.com/reddit/reddit/wiki/API%3A-info.json
-     * Params: url (string): The URL to get information for
-     **************************************************************************/
+    /**
+    *ÊGet page information
+    *
+    * Get information on a URLs submission on Reddit
+    * @link https://github.com/reddit/reddit/wiki/API%3A-info.json
+    * @param string $url The URL to get information for
+    */
     public function getPageInfo($url){
         $response = null;
         if ($url){
@@ -122,26 +127,27 @@ class reddit{
         return $response;
     }
     
-     /***************************************************************************
-     * Function: Get Raw JSON
-     * Description: Get Raw JSON for a reddit permalink
-     * Params: permalink (string): permalink to get raw JSON for
-     **************************************************************************/
-     public function getRawJSON($permalink)
-     {
-         $urlListing = "http://www.reddit.com/{$permalink}.json";
-         return $this->runCurl($urlListing);
-     }  
+    /**
+    *ÊGet Raw JSON
+    *
+    * Get Raw JSON for a reddit permalink
+    * @param string $permalink permalink to get raw JSON for
+    */
+    public function getRawJSON($permalink){
+        $urlListing = "http://www.reddit.com/{$permalink}.json";
+        return $this->runCurl($urlListing);
+    }  
          
-    /***************************************************************************
-     * Function: Save Post
-     * Description: Save a post to your account.  Save feeds:
-     *              http://www.reddit.com/saved/.xml
-     *              http://www.reddit.com/saved/.json
-     * API: https://github.com/reddit/reddit/wiki/API%3A-save
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     **************************************************************************/
+    /**
+    *ÊSave post
+    *
+    * Save a post to your account.  Save feeds:
+    * http://www.reddit.com/saved/.xml
+    * http://www.reddit.com/saved/.json
+    * @link https://github.com/reddit/reddit/wiki/API%3A-save
+    * @param string $name the full name of the post to save (name parameter
+    *                     in the getSubscriptions() return value)
+    */
     public function savePost($name){
         $response = null;
         if ($name){
@@ -152,13 +158,14 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Unsave Post
-     * Description: Unsave a saved post from your account
-     * API: https://github.com/reddit/reddit/wiki/API%3A-unsave
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     **************************************************************************/
+    /**
+    *ÊUnsave post
+    *
+    * Unsave a saved post from your account
+    * @link https://github.com/reddit/reddit/wiki/API%3A-unsave
+    * @param string $name the full name of the post to unsave (name parameter
+    *                     in the getSubscriptions() return value)
+    */
     public function unsavePost($name){
         $response = null;
         if ($name){
@@ -169,13 +176,14 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Hide Post 
-     * Description: Hide a post on your account
-     * API: https://github.com/reddit/reddit/wiki/API%3A-hide
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     **************************************************************************/
+    /**
+    *ÊHide post
+    *
+    * Hide a post on your account
+    * @link https://github.com/reddit/reddit/wiki/API%3A-hide
+    * @param string $name The full name of the post to hide (name parameter
+    *                     in the getSubscriptions() return value)
+    */
     public function hidePost($name){
         $response = null;
         if ($name){
@@ -186,13 +194,14 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Unhide Post
-     * Description: Unhide a hidden post on your account
-     * API: https://github.com/reddit/reddit/wiki/API%3A-unhide
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     **************************************************************************/
+    /**
+    * Unhide post
+    *
+    * Unhide a hidden post on your account
+    * @link https://github.com/reddit/reddit/wiki/API%3A-unhide
+    * @param string $name The full name of the post to unhide (name parameter
+    *                     in the getSubscriptions() return value)
+    */
     public function unhidePost($name){
         $response = null;
         if ($name){
@@ -203,17 +212,18 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Share a Post
-     * Description: E-Mail a post to someone
-     * API: https://github.com/reddit/reddit/wiki/API
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     *         shareFrom (string): The name of the person sharing the story
-     *         replyTo (string): The e-mail the sharee should respond to
-     *         shareTo (string): The e-mail the story should be sent to
-     *         message (string): The e-mail message
-     **************************************************************************/
+    /**
+    *ÊShare a post
+    *
+    * E-Mail a post to someone
+    * @link https://github.com/reddit/reddit/wiki/API
+    * @param string $name The full name of the post to share (name parameter
+    *                     in the getSubscriptions() return value)
+    * @param string $shareFrom The name of the person sharing the story
+    * @param string $replyTo The e-mail the sharee should respond to
+    * @param string $shareTo The e-mail the story should be sent to
+    * @param string $message The e-mail message
+    */
     public function sharePost($name, $shareFrom, $replyTo, $shareTo, $message){
         $urlShare = "{$this->apiHost}/share";
         $postData = sprintf("parent=%s&share_from=%s&replyto=%s&share_to=%s&message=%s&uh=%s",
@@ -228,14 +238,15 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Add New Comment
-     * Description: Add a new comment to a story
-     * API: https://github.com/reddit/reddit/wiki/API%3A-comment
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     *         text (string): The comment markup
-     **************************************************************************/
+    /**
+    * Add new comment
+    *
+    * Add a new comment to a story
+    * @link https://github.com/reddit/reddit/wiki/API%3A-comment
+    * @param string $name The full name of the post to comment (name parameter
+    *                     in the getSubscriptions() return value)
+    * @param string $text The comment markup
+    */
     public function addComment($name, $text){
         $response = null;
         if ($name && $text){
@@ -249,15 +260,16 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Vote on a story
-     * Description:
-     * API: https://github.com/reddit/reddit/wiki/API%3A-vote
-     * Params: name (string): The full name of the post to save (name parameter
-     *                        in the getSubscriptions() return value)
-     *         vote (number): The vote to be made (1 = upvote, 0 = no vote,
-     *                        -1 = downvote)
-     **************************************************************************/
+    /**
+    *ÊVote on a story
+    *
+    * Adds a vote (up / down / neutral) on a story
+    * @link https://github.com/reddit/reddit/wiki/API%3A-vote
+    * @param string $name The full name of the post to vote on (name parameter
+    *                     in the getSubscriptions() return value)
+    * @param int $vote The vote to be made (1 = upvote, 0 = no vote,
+    *                  -1 = downvote)
+    */
     public function addVote($name, $vote = 1){
         $response = null;
         if ($name){
@@ -268,15 +280,16 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Set Flair
-     * Description: Set or clear a user's flair in a subreddit
-     * API: https://github.com/reddit/reddit/wiki/API%3A-flair
-     * Params: subreddit (string): The subreddit to use
-     *         user (string): The name of the user
-     *         text (string): Flair text to assign
-     *         cssClass (string): CSS class to assign to the flair text
-     **************************************************************************/
+    /**
+    * Set flair
+    *
+    * Set or clear a user's flair in a subreddit
+    * @link https://github.com/reddit/reddit/wiki/API%3A-flair
+    * @param string $subreddit The subreddit to use
+    * @param string $user The name of the user
+    * @param string $text Flair text to assign
+    * @param string $cssClass CSS class to assign to the flair text
+    */
     public function setFlair($subreddit, $user, $text, $cssClass){
         $urlFlair = "{$this->apiHost}/flair";
         $postData = sprintf("r=%s&name=%s&text=%s&css_class=%s&uh=%s",
@@ -289,15 +302,16 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Get Flair List
-     * Description: Download the flair assignments of a subreddit
-     * API: https://github.com/reddit/reddit/wiki/API%3A-flairlist
-     * Params: subreddit (string): The subreddit to use
-     *         limit (number): The maximum number of items to return (max 1000)
-     *         after (string): Return entries starting after this user
-     *         before (string): Return entries starting before this user 
-     **************************************************************************/
+    /**
+    * Get flair list
+    *
+    * Download the flair assignments of a subreddit
+    * @link https://github.com/reddit/reddit/wiki/API%3A-flairlist
+    * @param string $subreddit The subreddit to use
+    * @param int $limit The maximum number of items to return (max 1000)
+    * @param string $after Return entries starting after this user
+    * @param string $before Return entries starting before this user
+    */
     public function getFlairList($subreddit, $limit = 100, $after, $before){
         $urlFlairList = "{$this->apiHost}/share";
         $postData = sprintf("r=%s&limit=%s&after=%s&before=%s&uh=%s",
@@ -310,13 +324,14 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: Set Flair CSV File
-     * Description: Post a CSV file of flair settings to a subreddit
-     * API: https://github.com/reddit/reddit/wiki/API%3A-flaircsv
-     * Params: subreddit (string): The subreddit to use
-     *         flairCSV (string): CSV file contents, up to 100 lines
-     **************************************************************************/
+    /**
+    * Set flair CSV file
+    *
+    * Post a CSV file of flair settings to a subreddit
+    * @link https://github.com/reddit/reddit/wiki/API%3A-flaircsv
+    * @param string $subreddit The subreddit to use
+    * @param string $flairCSV CSV file contents, up to 100 lines
+    */
     public function setFlairCSV($subreddit, $flairCSV){
         $urlFlairCSV = "{$this->apiHost}/flaircsv.json";
         $postData = sprintf("r=%s&flair_csv=%s&uh=%s",
@@ -327,12 +342,14 @@ class reddit{
         return $response;
     }
     
-    /***************************************************************************
-     * Function: cURL Request
-     * Description: General cURL request function for GET and POST 
-     * Params: url (string): URL to be requested
-     *         postVals (NVP string): NVP string to be send with POST request
-     **************************************************************************/
+    /**
+    *ÊcURL request
+    *
+    * General cURL request function for GET and POST
+    * @link URL
+    * @param string $url URL to be requested
+    * @param string $postVals NVP string to be send with POST request
+    */
     private function runCurl($url, $postVals = null){
         $ch = curl_init($url);
         
