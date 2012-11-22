@@ -1,6 +1,6 @@
 <?php
 /**
-*ÊReddit PHP SDK
+* Reddit PHP SDK
 *
 * Provides a SDK for accessing the Reddit APIs
 * Useage: 
@@ -15,7 +15,7 @@ class reddit{
     private $session = null;
     
     /**
-    *ÊClass Constructor
+    * Class Constructor
     *
     * Construct the class and simultaneously log a user in.
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
@@ -40,7 +40,7 @@ class reddit{
     }
     
     /**
-    *ÊCreate new story
+    * Create new story
     *
     * Creates a new story on a particular subreddit
     * @link https://github.com/reddit/reddit/wiki/API%3A-submit
@@ -73,7 +73,7 @@ class reddit{
     }
     
     /**
-    *ÊGet user
+    * Get user
     *
     * Get data for the current user
     * @link https://github.com/reddit/reddit/wiki/API%3A-me.json
@@ -84,7 +84,7 @@ class reddit{
     }
     
     /**
-    *ÊGet user subscriptions
+    * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to
     * @link https://github.com/reddit/reddit/wiki/API%3A-mine.json
@@ -95,7 +95,7 @@ class reddit{
     }
     
     /**
-    *ÊGet listing
+    * Get listing
     *
     * Get the listing of submissions from a subreddit
     * @link http://www.reddit.com/dev/api#GET_listing
@@ -112,7 +112,7 @@ class reddit{
     }
     
     /**
-    *ÊGet page information
+    * Get page information
     *
     * Get information on a URLs submission on Reddit
     * @link https://github.com/reddit/reddit/wiki/API%3A-info.json
@@ -128,7 +128,7 @@ class reddit{
     }
     
     /**
-    *ÊGet Raw JSON
+    * Get Raw JSON
     *
     * Get Raw JSON for a reddit permalink
     * @param string $permalink permalink to get raw JSON for
@@ -139,7 +139,7 @@ class reddit{
     }  
          
     /**
-    *ÊSave post
+    * Save post
     *
     * Save a post to your account.  Save feeds:
     * http://www.reddit.com/saved/.xml
@@ -159,7 +159,7 @@ class reddit{
     }
     
     /**
-    *ÊUnsave post
+    * Unsave post
     *
     * Unsave a saved post from your account
     * @link https://github.com/reddit/reddit/wiki/API%3A-unsave
@@ -177,7 +177,7 @@ class reddit{
     }
     
     /**
-    *ÊHide post
+    * Hide post
     *
     * Hide a post on your account
     * @link https://github.com/reddit/reddit/wiki/API%3A-hide
@@ -213,7 +213,7 @@ class reddit{
     }
     
     /**
-    *ÊShare a post
+    * Share a post
     *
     * E-Mail a post to someone
     * @link https://github.com/reddit/reddit/wiki/API
@@ -261,7 +261,7 @@ class reddit{
     }
     
     /**
-    *ÊVote on a story
+    * Vote on a story
     *
     * Adds a vote (up / down / neutral) on a story
     * @link https://github.com/reddit/reddit/wiki/API%3A-vote
@@ -343,7 +343,7 @@ class reddit{
     }
     
     /**
-    *ÊcURL request
+    * cURL request
     *
     * General cURL request function for GET and POST
     * @link URL
