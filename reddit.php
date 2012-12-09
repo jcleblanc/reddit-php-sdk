@@ -177,6 +177,16 @@ class reddit{
     }
     
     /**
+    * Get saved posts
+    *
+    * Get the listing of a user's saved posts 
+    * @param string $username the desired user. Must be already authenticated.
+    */
+    public function getSaved($username){
+        return $this->runCurl("http://www.reddit.com/user/".$username."/saved.json");
+    }
+    
+    /**
     * Hide post
     *
     * Hide a post on your account
