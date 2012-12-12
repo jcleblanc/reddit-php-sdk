@@ -375,6 +375,7 @@ class reddit{
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_COOKIE => "reddit_session={$this->session}",
+            CURLOPT_TIMEOUT => 3
         );
         
         if ($postVals != null){
