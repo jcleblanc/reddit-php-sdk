@@ -353,9 +353,9 @@ class reddit{
     public function getSavedPosts($after = null, $count = 25){
         $urlSaved = "http://www.reddit.com/saved.json?count=$count";
 
-		if ($after != null) {
-			$urlSaved .= "&after=$after";
-		}
+	    if ($after != null) {
+            $urlSaved .= "&after=$after";
+        }
 
         return $this->runCurl($urlSaved, null, 1);
     }
@@ -382,6 +382,7 @@ class reddit{
             $options[CURLOPT_CUSTOMREQUEST] = "POST";  
         }
 
+		// I think this should be there by default
 		if ($followRedirects != null) {
 			$options[CURLOPT_FOLLOWLOCATION] = 1;
 		}
