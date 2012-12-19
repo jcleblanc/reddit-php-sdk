@@ -33,6 +33,34 @@ $userData = $reddit->getUser();
 </pre>
 </notextile>
 
+*Get Inbox Information*
+<notextile>
+<pre>
+$userData = $reddit->getInbox();
+</pre>
+</notextile>
+
+*Get Unread Mail Information*
+<notextile>
+<pre>
+$userData = $reddit->getUnreadMail();
+</pre>
+</notextile>
+
+*Get Sent Mail Information*
+<notextile>
+<pre>
+$userData = $reddit->getSentMail();
+</pre>
+</notextile>
+
+*Get Inbox Information*
+<notextile>
+<pre>
+$userData = $reddit->getInbox();
+</pre>
+</notextile>
+
 *Get User Subscriptions*
 <notextile>
 <pre>
