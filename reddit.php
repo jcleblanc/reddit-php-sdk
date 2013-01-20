@@ -351,6 +351,24 @@ class reddit{
         $response = $this->runCurl($urlFlairCSV, $postData);
         return $response;
     }
+
+	/**
+    * Get user's saved posts
+    *
+    * Get the posts that the user has saved
+    * @link https://github.com/reddit/reddit/wiki/Content%3A-saved
+    * @param string $after Next page of posts, get this from the previous request, optional
+    * @param int $count Number of results to display perpage, optional
+    */
+    public function getSavedPosts($after = null, $count = 25){
+        $urlSaved = "http://www.reddit.com/saved.json?count=$count";
+
+        if ($after != null) {
+            $urlSaved .= "&after=$after";
+        }
+
+        return $this->runCurl($urlSaved, null, 1);
+    }
     
     /**
     * cURL request
@@ -359,8 +377,9 @@ class reddit{
     * @link URL
     * @param string $url URL to be requested
     * @param string $postVals NVP string to be send with POST request
+    * @param int $followRedirects should curl follow redirects, optional
     */
-    private function runCurl($url, $postVals = null){
+    private function runCurl($url, $postVals = null, $followRedirects = null){
         $ch = curl_init($url);
         
         $options = array(
@@ -372,6 +391,11 @@ class reddit{
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
             $options[CURLOPT_CUSTOMREQUEST] = "POST";  
+        }
+
+        // I think this should be there by default
+        if ($followRedirects != null) {
+            $options[CURLOPT_FOLLOWLOCATION] = 1;
         }
         
         curl_setopt_array($ch, $options);
