@@ -82,6 +82,13 @@ $response = $reddit->getListing("technology", 5);
 </pre>
 </notextile>
 
+*Get Saved User Posts*
+<notextile>
+<pre>
+$response = $reddit->getSaved("USERNAME");
+</pre>
+</notextile>
+
 *Get Raw JSON*
 <notextile>
 <pre>
