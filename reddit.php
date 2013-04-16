@@ -11,6 +11,7 @@
 class reddit{
     //private $apiHost = "http://www.reddit.com/api";
     private $apiHost = "https://ssl.reddit.com/api";
+    private $nonMainApiHost = "https://ssl.reddit.com/";
     private $modHash = null;
     private $session = null;
     
@@ -66,12 +67,26 @@ class reddit{
         if ($link != null){ $postData .= "&url=" . urlencode($link); }
     
         $response = $this->runCurl($urlSubmit, $postData);
-        
+        if (strpos($response->jquery[22][3][0],"are doing that too much") !== false ){
+			// limited
+			return $response->jquery[22][3][0];
+        }
         if ($response->jquery[18][3][0] == "that link has already been submitted"){
             return $response->jquery[18][3][0];
         }
+	    }
+     
+    /**
+    * get unread messages
+    *
+    * get unread messages. It uses the non /api/* url for this ($this->nonMainApiHost, not apiHost)
+    * @link http://www.reddit.com/dev/api#POST_api_unread_message
+    */
+    public function getUnreadMessages(){
+        $urlMessages = $this->nonMainApiHost . "/message/unread.json";
+        return $this->runcurl($urlMessages);
     }
-    
+
     /**
     * Get user
     *
@@ -368,18 +383,21 @@ class reddit{
             CURLOPT_COOKIE => "reddit_session={$this->session}",
             CURLOPT_TIMEOUT => 3
         );
+            $options[CURLOPT_FOLLOWLOCATION] = true;  
         
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
             $options[CURLOPT_CUSTOMREQUEST] = "POST";  
         }
-        
+
         curl_setopt_array($ch, $options);
         
         $response = json_decode(curl_exec($ch));
+
         curl_close($ch);
-        
         return $response;
     }
 }
 ?>
+
+
