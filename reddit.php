@@ -4,8 +4,7 @@
 *
 * Provides a SDK for accessing the Reddit APIs
 * Useage: 
-*   $reddit = new reddit();
-*   $reddit->login("USERNAME", "PASSWORD");
+*   $reddit = new reddit("USERNAME", "PASSWORD");
 *   $user = $reddit->getUser();
 */
 class reddit{
