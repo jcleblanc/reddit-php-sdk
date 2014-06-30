@@ -13,6 +13,7 @@ class reddit{
     private $apiHost = "https://ssl.reddit.com/api";
     private $modHash = null;
     private $session = null;
+    private $userAgent = null;
     
     /**
     * Class Constructor
@@ -353,6 +354,18 @@ class reddit{
     }
     
     /**
+    * Set HTTP User-agent
+    *
+    * Per reddit's API access rules <https://github.com/reddit/reddit/wiki/API>,
+    * each client should set a unique User-Agent.
+    *
+    * @param string $userAgent The desired User-Agent for cURL to send
+    */
+    public function setUserAgent($userAgent) {
+        $this->userAgent = $userAgent;
+    }
+    
+    /**
     * cURL request
     *
     * General cURL request function for GET and POST
@@ -372,6 +385,10 @@ class reddit{
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
             $options[CURLOPT_CUSTOMREQUEST] = "POST";  
+        }
+        
+        if ($this->userAgent != null) {
+            $options[CURLOPT_USERAGENT] = $this->userAgent;
         }
         
         curl_setopt_array($ch, $options);
