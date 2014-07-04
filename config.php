@@ -8,7 +8,7 @@ define('ENDPOINT_OAUTH_AUTHORIZE', 'https://ssl.reddit.com/api/v1/authorize');
 define('ENDPOINT_OAUTH_TOKEN', 'https://ssl.reddit.com/api/v1/access_token');
 define('ENDPOINT_OAUTH_REDIRECT', 'http://localhost/reddit/test.php');
 
-//access token configuration
+//access token configuration from https://ssl.reddit.com/prefs/apps
 define('CLIENT_ID', 'YOUR CLIENT ID');
 define('CLIENT_SECRET', 'YOUR CLIENT SECRET');
 

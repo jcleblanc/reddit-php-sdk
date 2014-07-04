@@ -7,13 +7,9 @@ require_once("config.php");
 * Provides a SDK for accessing the Reddit APIs
 * Useage: 
 *   $reddit = new reddit();
-*   $reddit->login("USERNAME", "PASSWORD");
 *   $user = $reddit->getUser();
 */
 class reddit{
-    private $apiHost;
-    private $modHash = null;
-    private $session = null;
     private $access_token;
     private $token_type;
     private $auth_mode = "basic";
@@ -23,69 +19,47 @@ class reddit{
     *
     * Construct the class and simultaneously log a user in.
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
-    * @param string $username The username to be logged into
-    * @param string $password The password to be used to log in
     */
-    public function __construct($authType = "basic", $username = null, $password = null){
-        if ($authType == "oauth"){
-            if (isset($_GET['error'])){
-                return $_GET['error'];
+    public function __construct(){
+        if (isset($_GET['error'])){
+            return $_GET['error'];
+        }
+        
+        if (isset($_GET['code'])){
+            //capture code from auth
+            $code = $_GET["code"];
+            
+            //construct POST object for access token fetch request
+            $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
+                                $code,
+                                ENDPOINT_OAUTH_REDIRECT,
+                                CLIENT_ID);
+            
+            //get JSON access token object (with refresh_token parameter)
+            $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+            
+            //store token and type
+            if (isset($token->access_token)){
+                $this->access_token = $token->access_token;
+                $this->token_type = $token->token_type;
             }
             
-            if (isset($_GET['code'])){
-                //capture code from auth
-                $code = $_GET["code"];
-                
-                //construct POST object for access token fetch request
-                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
-                                    $code,
-                                    ENDPOINT_OAUTH_REDIRECT,
-                                    CLIENT_ID);
-                
-                //get JSON access token object (with refresh_token parameter)
-                $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
-                
-                //store token and type
-                if (isset($token->access_token)){
-                    $this->access_token = $token->access_token;
-                    $this->token_type = $token->token_type;
-                }
-                
-                //set API endpoint
-                $this->apiHost = ENDPOINT_OAUTH;
-                
-                //set auth mode for requests
-                $this->auth_mode = 'oauth';
-            } else {
-                $state = rand();
-                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                                   ENDPOINT_OAUTH_AUTHORIZE,
-                                   CLIENT_ID,
-                                   ENDPOINT_OAUTH_REDIRECT,
-                                   SCOPES,
-                                   $state);
-                    
-                //forward user to PayPal auth page
-                header("Location: $urlAuth");
-            }
-        } else {
             //set API endpoint
-            $this->apiHost = ENDPOINT_BASIC;
+            $this->apiHost = ENDPOINT_OAUTH;
             
-            $urlLogin = "{$this->apiHost}/login/$username";
-            
-            $postData = sprintf("api_type=json&user=%s&passwd=%s",
-                                $username,
-                                $password);
-            $response = $this->runCurl($urlLogin, $postData);
-    
-            if (count($response->json->errors) > 0 || ! is_object($response)){
-                return "login error";    
-            } else {
-                $this->modHash = $response->json->data->modhash;   
-                $this->session = $response->json->data->cookie;
-                return $this->modHash;
-            }
+            //set auth mode for requests
+            $this->auth_mode = 'oauth';
+        } else {
+            $state = rand();
+            $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                               ENDPOINT_OAUTH_AUTHORIZE,
+                               CLIENT_ID,
+                               ENDPOINT_OAUTH_REDIRECT,
+                               SCOPES,
+                               $state);
+                
+            //forward user to PayPal auth page
+            header("Location: $urlAuth");
         }
     }
     
@@ -93,20 +67,19 @@ class reddit{
     * Create new story
     *
     * Creates a new story on a particular subreddit
-    * @link https://github.com/reddit/reddit/wiki/API%3A-submit
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_submit
     * @param string $title The title of the story
     * @param string $link The link that the story should forward to
     * @param string $subreddit The subreddit where the story should be added
     */
     public function createStory($title = null, $link = null, $subreddit = null){
-        $urlSubmit = "{$this->apiHost}/submit";
+        $urlSubmit = "{$this->apiHost}/api/submit";
         
         //data checks and pre-setup
         if ($title == null || $subreddit == null){ return null; }
         $kind = ($link == null) ? "self" : "link";
         
-        $postData = sprintf("uh=%s&kind=%s&sr=%s&title=%s&r=%s&renderstyle=html",
-                            $this->modHash,
+        $postData = sprintf("kind=%s&sr=%s&title=%s&r=%s",
                             $kind,
                             $subreddit,
                             urlencode($title),
@@ -117,16 +90,16 @@ class reddit{
     
         $response = $this->runCurl($urlSubmit, $postData);
         
-        if ($response->jquery[18][3][0] == "that link has already been submitted"){
+        /*if ($response->jquery[18][3][0] == "that link has already been submitted"){
             return $response->jquery[18][3][0];
-        }
+        }*/
     }
     
     /**
     * Get user
     *
     * Get data for the current user
-    * @link https://github.com/reddit/reddit/wiki/API%3A-me.json
+    * @link http://www.reddit.com/dev/api#GET_api_v1_me
     */
     public function getUser(){
         $urlUser = "{$this->apiHost}/api/v1/me";
@@ -136,8 +109,9 @@ class reddit{
     /**
     * Get user subscriptions
     *
-    * Get the subscriptions that the user is subscribed to
-    * @link https://github.com/reddit/reddit/wiki/API%3A-mine.json
+    * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
+    * @link http://www.reddit.com/dev/api#GET_subreddits_mine_contributor
+    * @param string $where The subscription content to obtain. One of subscriber, contributor, or moderator
     */
     public function getSubscriptions($where = "subscriber"){
         $urlSubscriptions = "{$this->apiHost}/subreddits/mine/$where";
@@ -150,6 +124,7 @@ class reddit{
     * Get the listing of submissions from a subreddit
     * @link http://www.reddit.com/dev/api#GET_listing
     * @param string $sr The subreddit name. Ex: technology, limit (integer): The number of posts to gather
+    * @param int $limit The number of listings to return
     */
     public function getListing($sr, $limit = 5){
         $limit = (isset($limit)) ? "?limit=".$limit : "";
@@ -158,21 +133,21 @@ class reddit{
         } else {
             $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
         }
-        return $this->runCurl($urlListing);
+        return self::runCurl($urlListing);
     }
     
     /**
     * Get page information
     *
     * Get information on a URLs submission on Reddit
-    * @link https://github.com/reddit/reddit/wiki/API%3A-info.json
+    * @link http://www.reddit.com/dev/api#GET_api_info
     * @param string $url The URL to get information for
     */
     public function getPageInfo($url){
         $response = null;
         if ($url){
             $urlInfo = "{$this->apiHost}/api/info?url=" . urlencode($url);
-            $response = $this->runCurl($urlInfo);
+            $response = self::runCurl($urlInfo);
         }
         return $response;
     }
@@ -185,7 +160,7 @@ class reddit{
     */
     public function getRawJSON($permalink){
         $urlListing = "http://www.reddit.com/{$permalink}.json";
-        return $this->runCurl($urlListing);
+        return self::runCurl($urlListing);
     }  
          
     /**
@@ -194,16 +169,19 @@ class reddit{
     * Save a post to your account.  Save feeds:
     * http://www.reddit.com/saved/.xml
     * http://www.reddit.com/saved/.json
-    * @link https://github.com/reddit/reddit/wiki/API%3A-save
+    * @link http://www.reddit.com/dev/api#POST_api_save
     * @param string $name the full name of the post to save (name parameter
     *                     in the getSubscriptions() return value)
+    * @param string $category the categorty to save the post to                   
     */
-    public function savePost($name){
+    public function savePost($name, $category = null){
         $response = null;
+        $cat = (isset($category)) ? "&category=$category" : "";
+        
         if ($name){
-            $urlSave = "{$this->apiHost}/save";
-            $postData = sprintf("id=%s&uh=%s", $name, $this->modHash);
-            $response = $this->runCurl($urlSave, $postData);
+            $urlSave = "{$this->apiHost}/api/save";
+            $postData = "id=$name$cat";
+            $response = self::runCurl($urlSave, $postData);
         }
         return $response;
     }
@@ -212,46 +190,48 @@ class reddit{
     * Unsave post
     *
     * Unsave a saved post from your account
-    * @link https://github.com/reddit/reddit/wiki/API%3A-unsave
+    * @link http://www.reddit.com/dev/api#POST_api_unsave
     * @param string $name the full name of the post to unsave (name parameter
     *                     in the getSubscriptions() return value)
     */
     public function unsavePost($name){
         $response = null;
+        
         if ($name){
-            $urlUnsave = "{$this->apiHost}/unsave";
-            $postData = sprintf("id=%s&uh=%s", $name, $this->modHash);
-            $response = $this->runCurl($urlUnsave, $postData);
+            $urlUnsave = "{$this->apiHost}/api/unsave";
+            $postData = "id=$name";
+            $response = self::runCurl($urlUnsave, $postData);
         }
         return $response;
     }
     
     /**
-    * Get saved posts
+    * Get historical user data
     *
-    * Get the listing of a user's saved posts 
+    * Get the historical data of a user
+    * @link http://www.reddit.com/dev/api/oauth#scope_history
     * @param string $username the desired user. Must be already authenticated.
+    * @param string $where the data to retrieve. One of overview,submitted,comments,liked,disliked,hidden,saved,gilded
     */
-    public function getSaved($username){
-        $urlSaved = "{$this->apiHost}/$username/saved.json";
-        echo $urlSaved;
-        return self::runCurl($urlSaved);
+    public function getHistory($username, $where = "saved"){
+        $urlHistory = "{$this->apiHost}/user/$username/$where";
+        return self::runCurl($urlHistory);
     }
     
     /**
     * Hide post
     *
     * Hide a post on your account
-    * @link https://github.com/reddit/reddit/wiki/API%3A-hide
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_hide
     * @param string $name The full name of the post to hide (name parameter
     *                     in the getSubscriptions() return value)
     */
     public function hidePost($name){
         $response = null;
         if ($name){
-            $urlHide = "{$this->apiHost}/hide";
-            $postData = sprintf("id=%s&uh=%s", $name, $this->modHash);
-            $response = $this->runCurl($urlHide, $postData);
+            $urlHide = "{$this->apiHost}/api/hide";
+            $postData = "id=$name";
+            $response = self::runCurl($urlHide, $postData);
         }
         return $response;
     }
@@ -260,43 +240,17 @@ class reddit{
     * Unhide post
     *
     * Unhide a hidden post on your account
-    * @link https://github.com/reddit/reddit/wiki/API%3A-unhide
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_unhide
     * @param string $name The full name of the post to unhide (name parameter
     *                     in the getSubscriptions() return value)
     */
     public function unhidePost($name){
         $response = null;
         if ($name){
-            $urlUnhide = "{$this->apiHost}/unhide";
-            $postData = sprintf("id=%s&uh=%s", $name, $this->modHash);
-            $response = $this->runCurl($urlUnhide, $postData);
+            $urlUnhide = "{$this->apiHost}/api/unhide";
+            $postData = "id=$name";
+            $response = self::runCurl($urlUnhide, $postData);
         }
-        return $response;
-    }
-    
-    /**
-    * Share a post
-    *
-    * E-Mail a post to someone
-    * @link https://github.com/reddit/reddit/wiki/API
-    * @param string $name The full name of the post to share (name parameter
-    *                     in the getSubscriptions() return value)
-    * @param string $shareFrom The name of the person sharing the story
-    * @param string $replyTo The e-mail the sharee should respond to
-    * @param string $shareTo The e-mail the story should be sent to
-    * @param string $message The e-mail message
-    */
-    public function sharePost($name, $shareFrom, $replyTo, $shareTo, $message){
-        $urlShare = "{$this->apiHost}/share";
-        $postData = sprintf("parent=%s&share_from=%s&replyto=%s&share_to=%s&message=%s&uh=%s",
-                            $name,
-                            $shareFrom,
-                            $replyTo,
-                            $shareTo,
-                            $message,
-                            $this->modHash);
-        
-        $response = $this->runCurl($urlShare, $postData);
         return $response;
     }
     
@@ -304,7 +258,7 @@ class reddit{
     * Add new comment
     *
     * Add a new comment to a story
-    * @link https://github.com/reddit/reddit/wiki/API%3A-comment
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_comment
     * @param string $name The full name of the post to comment (name parameter
     *                     in the getSubscriptions() return value)
     * @param string $text The comment markup
@@ -312,12 +266,11 @@ class reddit{
     public function addComment($name, $text){
         $response = null;
         if ($name && $text){
-            $urlComment = "{$this->apiHost}/comment";
-            $postData = sprintf("thing_id=%s&text=%s&uh=%s",
+            $urlComment = "{$this->apiHost}/api/comment";
+            $postData = sprintf("thing_id=%s&text=%s",
                                 $name,
-                                $text,
-                                $this->modHash);
-            $response = $this->runCurl($urlComment, $postData);
+                                $text);
+            $response = self::runCurl($urlComment, $postData);
         }
         return $response;
     }
@@ -326,7 +279,7 @@ class reddit{
     * Vote on a story
     *
     * Adds a vote (up / down / neutral) on a story
-    * @link https://github.com/reddit/reddit/wiki/API%3A-vote
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_vote
     * @param string $name The full name of the post to vote on (name parameter
     *                     in the getSubscriptions() return value)
     * @param int $vote The vote to be made (1 = upvote, 0 = no vote,
@@ -335,9 +288,9 @@ class reddit{
     public function addVote($name, $vote = 1){
         $response = null;
         if ($name){
-            $urlVote = "{$this->apiHost}/vote";
-            $postData = sprintf("id=%s&dir=%s&uh=%s", $name, $vote, $this->modHash);
-            $response = $this->runCurl($urlVote, $postData);
+            $urlVote = "{$this->apiHost}/api/vote";
+            $postData = sprintf("id=%s&dir=%s", $name, $vote);
+            $response = self::runCurl($urlVote, $postData);
         }
         return $response;
     }
@@ -346,21 +299,19 @@ class reddit{
     * Set flair
     *
     * Set or clear a user's flair in a subreddit
-    * @link https://github.com/reddit/reddit/wiki/API%3A-flair
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_flair
     * @param string $subreddit The subreddit to use
     * @param string $user The name of the user
     * @param string $text Flair text to assign
     * @param string $cssClass CSS class to assign to the flair text
     */
     public function setFlair($subreddit, $user, $text, $cssClass){
-        $urlFlair = "{$this->apiHost}/flair";
-        $postData = sprintf("r=%s&name=%s&text=%s&css_class=%s&uh=%s",
-                            $subreddit,
+        $urlFlair = "{$this->apiHost}/r/$subreddit/api/flair";
+        $postData = sprintf("name=%s&text=%s&css_class=%s",
                             $user,
                             $text,
-                            $cssClass,
-                            $this->modHash);
-        $response = $this->runCurl($urlFlair, $postData);
+                            $cssClass);
+        $response = self::runCurl($urlFlair, $postData);
         return $response;
     }
     
@@ -368,21 +319,19 @@ class reddit{
     * Get flair list
     *
     * Download the flair assignments of a subreddit
-    * @link https://github.com/reddit/reddit/wiki/API%3A-flairlist
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_flairlist
     * @param string $subreddit The subreddit to use
     * @param int $limit The maximum number of items to return (max 1000)
     * @param string $after Return entries starting after this user
     * @param string $before Return entries starting before this user
     */
     public function getFlairList($subreddit, $limit = 100, $after, $before){
-        $urlFlairList = "{$this->apiHost}/share";
-        $postData = sprintf("r=%s&limit=%s&after=%s&before=%s&uh=%s",
-                            $subreddit,
+        $urlFlairList = "{$this->apiHost}/r/$subreddit/api/flairlist";
+        $postData = sprintf("limit=%s&after=%s&before=%s",
                             $limit,
                             $after,
-                            $before,
-                            $this->modHash);
-        $response = $this->runCurl($urlFlairList, $postData);
+                            $before);
+        $response = self::runCurl($urlFlairList, $postData);
         return $response;
     }
     
@@ -390,17 +339,14 @@ class reddit{
     * Set flair CSV file
     *
     * Post a CSV file of flair settings to a subreddit
-    * @link https://github.com/reddit/reddit/wiki/API%3A-flaircsv
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_flaircsv
     * @param string $subreddit The subreddit to use
     * @param string $flairCSV CSV file contents, up to 100 lines
     */
     public function setFlairCSV($subreddit, $flairCSV){
-        $urlFlairCSV = "{$this->apiHost}/flaircsv.json";
-        $postData = sprintf("r=%s&flair_csv=%s&uh=%s",
-                            $subreddit,
-                            $flairCSV,
-                            $this->modHash);
-        $response = $this->runCurl($urlFlairCSV, $postData);
+        $urlFlairCSV = "{$this->apiHost}/r/$subreddit/api/flaircsv";
+        $postData = "flair_csv=$flairCSV";
+        $response = self::runCurl($urlFlairCSV, $postData);
         return $response;
     }
     
@@ -417,8 +363,7 @@ class reddit{
         
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
-            //CURLOPT_COOKIE => "reddit_session={$this->session}",
-            //CURLOPT_TIMEOUT => 3
+            CURLOPT_TIMEOUT => 3
         );
         
         if ($postVals != null){
@@ -427,7 +372,7 @@ class reddit{
         }
         
         if ($this->auth_mode == 'oauth'){
-            $headers = array("Content-Type:application/json", "Authorization: {$this->token_type} {$this->access_token}");
+            $headers = array("Authorization: {$this->token_type} {$this->access_token}");
             $options[CURLOPT_HEADER] = false;
             $options[CURLINFO_HEADER_OUT] = false;
             $options[CURLOPT_HTTPHEADER] = $headers;
@@ -442,7 +387,6 @@ class reddit{
         }
         
         curl_setopt_array($ch, $options);
-        //$response = json_decode(curl_exec($ch));
         $response = curl_exec($ch);
         $response = json_decode($response);
         curl_close($ch);
