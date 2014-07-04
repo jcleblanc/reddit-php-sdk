@@ -1,4 +1,6 @@
 <?php
+require_once("config.php");
+
 /**
 * Reddit PHP SDK
 *
@@ -9,10 +11,12 @@
 *   $user = $reddit->getUser();
 */
 class reddit{
-    //private $apiHost = "http://www.reddit.com/api";
-    private $apiHost = "https://ssl.reddit.com/api";
+    private $apiHost;
     private $modHash = null;
     private $session = null;
+    private $access_token;
+    private $token_type;
+    private $auth_mode = "basic";
     
     /**
     * Class Constructor
@@ -22,20 +26,66 @@ class reddit{
     * @param string $username The username to be logged into
     * @param string $password The password to be used to log in
     */
-    public function __construct($username = null, $password = null){
-        $urlLogin = "{$this->apiHost}/login/$username";
-        
-        $postData = sprintf("api_type=json&user=%s&passwd=%s",
-                            $username,
-                            $password);
-        $response = $this->runCurl($urlLogin, $postData);
-        
-        if (count($response->json->errors) > 0){
-            return "login error";    
+    public function __construct($authType = "basic", $username = null, $password = null){
+        if ($authType == "oauth"){
+            if (isset($_GET['error'])){
+                return $_GET['error'];
+            }
+            
+            if (isset($_GET['code'])){
+                //capture code from auth
+                $code = $_GET["code"];
+                
+                //construct POST object for access token fetch request
+                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
+                                    $code,
+                                    ENDPOINT_OAUTH_REDIRECT,
+                                    CLIENT_ID);
+                
+                //get JSON access token object (with refresh_token parameter)
+                $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+                
+                //store token and type
+                if (isset($token->access_token)){
+                    $this->access_token = $token->access_token;
+                    $this->token_type = $token->token_type;
+                }
+                
+                //set API endpoint
+                $this->apiHost = ENDPOINT_OAUTH;
+                
+                //set auth mode for requests
+                $this->auth_mode = 'oauth';
+            } else {
+                $state = rand();
+                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                                   ENDPOINT_OAUTH_AUTHORIZE,
+                                   CLIENT_ID,
+                                   ENDPOINT_OAUTH_REDIRECT,
+                                   SCOPES,
+                                   $state);
+                    
+                //forward user to PayPal auth page
+                header("Location: $urlAuth");
+            }
         } else {
-            $this->modHash = $response->json->data->modhash;   
-            $this->session = $response->json->data->cookie;
-            return $this->modHash;
+            //set API endpoint
+            $this->apiHost = ENDPOINT_BASIC;
+            
+            $urlLogin = "{$this->apiHost}/login/$username";
+            
+            $postData = sprintf("api_type=json&user=%s&passwd=%s",
+                                $username,
+                                $password);
+            $response = $this->runCurl($urlLogin, $postData);
+    
+            if (count($response->json->errors) > 0 || ! is_object($response)){
+                return "login error";    
+            } else {
+                $this->modHash = $response->json->data->modhash;   
+                $this->session = $response->json->data->cookie;
+                return $this->modHash;
+            }
         }
     }
     
@@ -79,8 +129,8 @@ class reddit{
     * @link https://github.com/reddit/reddit/wiki/API%3A-me.json
     */
     public function getUser(){
-        $urlUser = "{$this->apiHost}/me.json";
-        return $this->runCurl($urlUser);
+        $urlUser = "{$this->apiHost}/api/v1/me";
+        return self::runCurl($urlUser, null, true);
     }
     
     /**
@@ -89,9 +139,9 @@ class reddit{
     * Get the subscriptions that the user is subscribed to
     * @link https://github.com/reddit/reddit/wiki/API%3A-mine.json
     */
-    public function getSubscriptions(){
-        $urlSubscriptions = "http://www.reddit.com/reddits/mine.json";
-        return $this->runCurl($urlSubscriptions);
+    public function getSubscriptions($where = "subscriber"){
+        $urlSubscriptions = "{$this->apiHost}/subreddits/mine/$where";
+        return self::runCurl($urlSubscriptions);
     }
     
     /**
@@ -121,7 +171,7 @@ class reddit{
     public function getPageInfo($url){
         $response = null;
         if ($url){
-            $urlInfo = "{$this->apiHost}/info.json?url=" . urlencode($url);
+            $urlInfo = "{$this->apiHost}/api/info?url=" . urlencode($url);
             $response = $this->runCurl($urlInfo);
         }
         return $response;
@@ -183,7 +233,9 @@ class reddit{
     * @param string $username the desired user. Must be already authenticated.
     */
     public function getSaved($username){
-        return $this->runCurl("http://www.reddit.com/user/".$username."/saved.json");
+        $urlSaved = "{$this->apiHost}/$username/saved.json";
+        echo $urlSaved;
+        return self::runCurl($urlSaved);
     }
     
     /**
@@ -360,23 +412,39 @@ class reddit{
     * @param string $url URL to be requested
     * @param string $postVals NVP string to be send with POST request
     */
-    private function runCurl($url, $postVals = null){
+    private function runCurl($url, $postVals = null, $headers = null, $auth = false){
         $ch = curl_init($url);
         
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_COOKIE => "reddit_session={$this->session}",
-            CURLOPT_TIMEOUT => 3
+            //CURLOPT_COOKIE => "reddit_session={$this->session}",
+            //CURLOPT_TIMEOUT => 3
         );
         
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
-            $options[CURLOPT_CUSTOMREQUEST] = "POST";  
+            $options[CURLOPT_CUSTOMREQUEST] = "POST";
+        }
+        
+        if ($this->auth_mode == 'oauth'){
+            $headers = array("Content-Type:application/json", "Authorization: {$this->token_type} {$this->access_token}");
+            $options[CURLOPT_HEADER] = false;
+            $options[CURLINFO_HEADER_OUT] = false;
+            $options[CURLOPT_HTTPHEADER] = $headers;
+        }
+        
+        if ($auth){
+            $options[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
+            $options[CURLOPT_USERPWD] = CLIENT_ID . ":" . CLIENT_SECRET;
+            $options[CURLOPT_SSLVERSION] = 3;
+            $options[CURLOPT_SSL_VERIFYPEER] = false;
+            $options[CURLOPT_SSL_VERIFYHOST] = 2;
         }
         
         curl_setopt_array($ch, $options);
-        
-        $response = json_decode(curl_exec($ch));
+        //$response = json_decode(curl_exec($ch));
+        $response = curl_exec($ch);
+        $response = json_decode($response);
         curl_close($ch);
         
         return $response;
