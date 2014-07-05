@@ -107,6 +107,39 @@ class reddit{
     }
     
     /**
+    * Get inbox
+    *
+    * Get data for the inbox
+    * @link http://www.reddit.com/dev/api#GET_message_inbox
+    */
+    public function getInbox(){
+        $urlInbox = "http://www.reddit.com/message/inbox.json";
+        return $this->runCurl($urlInbox);
+    }
+    
+    /**
+    * Get unread mail
+    *
+    * Get data for the unread mails
+    * @link http://www.reddit.com/dev/api#GET_message_unread
+    */
+    public function getUnreadMail(){
+        $urlUnreadMail = "http://www.reddit.com/message/unread.json";
+        return $this->runCurl($urlUnreadMail);
+    }
+    
+    /**
+    * Get sent mail
+    *
+    * Get data for the unread mails
+    * @link http://www.reddit.com/dev/api#GET_message_sent
+    */
+    public function getSentMail(){
+        $urlUnreadMail = "http://www.reddit.com/message/sent.json";
+        return $this->runCurl($urlUnreadMail);
+    }
+    
+    /**
     * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
