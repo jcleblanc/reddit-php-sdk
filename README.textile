@@ -140,4 +140,4 @@ h2. Other Resources
 
 The following are additional resources available for this SDK
 
-* "Drupal Module":https://github.com/ethanteague/redditview (created by @ethanteague): A Drupal module that wraps this SDK
+* "Drupal Module":https://github.com/ethanteague/redditview (created by "@ethanteague":https://github.com/ethanteague): A Drupal module that wraps this SDK
