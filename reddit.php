@@ -115,6 +115,41 @@ class reddit{
     }
     
     /**
+    * Send message
+    *
+    * Send a message to another user, from the current user
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_compose
+    * @param string $to The name of a existing user to send the message to
+    * @param string $subject The subject of the message, no longer than 100 characters
+    * @param string $text The content of the message, in raw markdown
+    */
+    public function sendMessage($to, $subject, $text){
+        $urlMessages = "{$this->apiHost}/api/compose";
+        
+        $postData = sprintf("to=%s&subject=%s&text=%s",
+                            $to,
+                            $subject,
+                            $text);
+        
+        return self::runCurl($urlMessages, $postData);
+    }
+    
+    /**
+    * Set read / unread message state
+    *
+    * Sets the read and unread state of a comma separates list of messages
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_read_message
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_unread_message
+    * @param string $state The state to set the messages to, either read or unread
+    * @param string $subject A comma separated list of message fullnames (t4_ and the message id - e.g. t4_1kuinv)
+    */
+    public function setMessageState($state = "read", $ids){
+        $urlMessageState = "{$this->apiHost}/api/{$state}_message";
+        $postData = "id=$ids";
+        return self::runCurl($urlMessageState, $postData);
+    }
+    
+    /**
     * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of

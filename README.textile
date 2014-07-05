@@ -42,6 +42,21 @@ $response = $reddit->getMessages("sent");   //get sent messages
 </pre>
 </notextile>
 
+*Send a Message to Another User*
+<notextile>
+<pre>
+$response = $reddit->sendMessage("jcleblanc", "Look at this message!", "Hey!\n\n**[search!](http://www.google.com/)**");
+</pre>
+</notextile>
+
+*Set the Read/Unread State of a Series of Messages*
+<notextile>
+<pre>
+$response = $reddit->setMessageState("read", "t4_1kuinv,t4_1kriyc");
+$response = $reddit->setMessageState("unread", "t4_1kuinv,t4_1kriyc");
+</pre>
+</notextile>
+
 *Get User Subscriptions*
 <notextile>
 <pre>
