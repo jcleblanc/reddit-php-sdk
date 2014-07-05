@@ -135,3 +135,9 @@ $response = $reddit->getFlairList("motorcycles", 100, "t2_39qab", "t2_39qab");
 $response = $reddit->setFlairCSV("motorcycles", "jcleblanc,ZZR600,kawasaki\n...");
 </pre>
 </notextile>
+
+h2. Other Resources
+
+The following are additional resources available for this SDK
+
+* "Drupal Module":https://github.com/ethanteague/redditview (created by @ethanteague): A Drupal module that wraps this SDK
