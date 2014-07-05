@@ -107,6 +107,18 @@ class reddit{
     }
     
     /**
+    * Get messages
+    *
+    * Get messages (inbox / unread / sent) for the current user
+    * @link http://www.reddit.com/dev/api/oauth#GET_message_inbox
+    * @param string $where The message type to return. One of inbox, unread, or sent
+    */
+    public function getMessages($where = "inbox"){
+        $urlMessages = "{$this->apiHost}/message/$where";
+        return self::runCurl($urlMessages);
+    }
+    
+    /**
     * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
