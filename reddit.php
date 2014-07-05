@@ -409,6 +409,10 @@ class reddit{
             CURLOPT_TIMEOUT => 3
         );
         
+        if (!empty($_SERVER['HTTP_USER_AGENT'])){
+            $options[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
+        }
+        
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
             $options[CURLOPT_CUSTOMREQUEST] = "POST";
