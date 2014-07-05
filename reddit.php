@@ -21,10 +21,6 @@ class reddit{
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
     */
     public function __construct(){
-        if (isset($_GET['error'])){
-            return $_GET['error'];
-        }
-        
         if (isset($_GET['code'])){
             //capture code from auth
             $code = $_GET["code"];
