@@ -57,6 +57,13 @@ $response = $reddit->setMessageState("unread", "t4_1kuinv,t4_1kriyc");
 </pre>
 </notextile>
 
+*Block Content via Inbox*
+<notextile>
+<pre>
+$response = $reddit->setContentBlock("t4_1kuinv");
+</pre>
+</notextile>
+
 *Get User Subscriptions*
 <notextile>
 <pre>

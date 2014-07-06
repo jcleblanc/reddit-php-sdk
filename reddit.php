@@ -141,12 +141,25 @@ class reddit{
     * @link http://www.reddit.com/dev/api/oauth#POST_api_read_message
     * @link http://www.reddit.com/dev/api/oauth#POST_api_unread_message
     * @param string $state The state to set the messages to, either read or unread
-    * @param string $subject A comma separated list of message fullnames (t4_ and the message id - e.g. t4_1kuinv)
+    * @param string $subject A comma separated list of message fullnames (t4_ and the message id - e.g. t4_1kuinv). 
     */
     public function setMessageState($state = "read", $ids){
         $urlMessageState = "{$this->apiHost}/api/{$state}_message";
         $postData = "id=$ids";
         return self::runCurl($urlMessageState, $postData);
+    }
+    
+    /**
+    * Set content block state
+    *
+    * Sets a given piece of content to a blocked state via the inbox
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_block
+    * @param string $id The full name of the content to block (e.g. t4_ and the message id - t4_1kuinv). 
+    */
+    public function setContentBlock($id){
+        $urlBlockMessage = "{$this->apiHost}/api/block";
+        $postData = "id=$id";
+        return self::runCurl($urlBlockMessage, $postData);
     }
     
     /**
