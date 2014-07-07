@@ -132,6 +132,13 @@ $response2 = $reddit->getRawJSON($response1->data->children[0)]->data->permalink
 </pre>
 </notextile>
 
+*Search All Subreddits*
+<notextile>
+<pre>
+$response = $reddit->search("penguins", 20);
+</pre>
+</notextile>
+
 *Add Comment*
 <notextile>
 <pre>

@@ -193,6 +193,29 @@ class reddit{
     }
     
     /**
+    * Search all subreddits
+    *
+    * Get the listing of submissions from a subreddit
+    * @link http://www.reddit.com/dev/api/oauth#GET_subreddits_search
+    * @param string $query The query to search for
+    * @param int $count The number of results to return
+    * @param string $after The fullname of a thing to search for results after
+    * @param string $before The fullname of a thing to search for results before
+    */
+    public function search($query, $count = 10, $after = null, $before = null){
+        $qAfter = (!empty($after)) ? "&after=".$after : "";
+        $qBefore = (!empty($before)) ? "&before=".$before : "";
+        
+        $urlSearch = sprintf("{$this->apiHost}/subreddits/search?q=%s&count=%s%s%s",
+                            $query,
+                            $count,
+                            $qAfter,
+                            $qBefore);
+        
+        return self::runCurl($urlSearch);
+    }
+    
+    /**
     * Get page information
     *
     * Get information on a URLs submission on Reddit
@@ -419,6 +442,7 @@ class reddit{
         
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_TIMEOUT => 3
         );
         
