@@ -1,9 +1,6 @@
 <?php
-//api request endpoints for oauth and basic auth
-define("ENDPOINT_BASIC", "https://ssl.reddit.com/api");
+//oauth token fetch and api request endpoints
 define("ENDPOINT_OAUTH", "https://oauth.reddit.com");
-
-//oauth token fetch endpoints
 define('ENDPOINT_OAUTH_AUTHORIZE', 'https://ssl.reddit.com/api/v1/authorize');
 define('ENDPOINT_OAUTH_TOKEN', 'https://ssl.reddit.com/api/v1/access_token');
 define('ENDPOINT_OAUTH_REDIRECT', 'http://localhost/reddit/test.php');
