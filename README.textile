@@ -92,17 +92,11 @@ $response = $reddit->unsavePost("t3_n6ocq");
 </pre>
 </notextile>
 
-*Hide Post*
+*Hide or Unhide Post*
 <notextile>
 <pre>
-$response = $reddit->hidePost("t3_n6ocq");
-</pre>
-</notextile>
-
-*Unhide Post*
-<notextile>
-<pre>
-$response = $reddit->unhidePost("t3_n6ocq");
+$response = $reddit->setPostHideState("hide", "t3_n6ocq");
+$response = $reddit->setPostHideState("unhide", "t3_n6ocq");
 </pre>
 </notextile>
 

@@ -206,7 +206,7 @@ class reddit{
         $qAfter = (!empty($after)) ? "&after=".$after : "";
         $qBefore = (!empty($before)) ? "&before=".$before : "";
         
-        $urlSearch = sprintf("{$this->apiHost}/subreddits/search?q=%s&count=%s%s%s",
+        $urlSearch = sprintf("{$this->apiHost}/subreddits/search?q=%s&count=%d%s%s",
                             $query,
                             $count,
                             $qAfter,
@@ -298,37 +298,21 @@ class reddit{
     }
     
     /**
-    * Hide post
+    * Set post hide state
     *
-    * Hide a post on your account
+    * Hide or unhide a post on your account
     * @link http://www.reddit.com/dev/api/oauth#POST_api_hide
-    * @param string $name The full name of the post to hide (name parameter
-    *                     in the getSubscriptions() return value)
-    */
-    public function hidePost($name){
-        $response = null;
-        if ($name){
-            $urlHide = "{$this->apiHost}/api/hide";
-            $postData = "id=$name";
-            $response = self::runCurl($urlHide, $postData);
-        }
-        return $response;
-    }
-    
-    /**
-    * Unhide post
-    *
-    * Unhide a hidden post on your account
     * @link http://www.reddit.com/dev/api/oauth#POST_api_unhide
-    * @param string $name The full name of the post to unhide (name parameter
-    *                     in the getSubscriptions() return value)
+    * @param string $state The state to set the post to, either hide or unhide
+    * @param string $name The full name of the post to hide or unhide (name
+    *                parameter in the getSubscriptions() return value)
     */
-    public function unhidePost($name){
+    public function setPostHideState($state = "hide", $name){
         $response = null;
         if ($name){
-            $urlUnhide = "{$this->apiHost}/api/unhide";
+            $urlHideState = "{$this->apiHost}/api/$state";
             $postData = "id=$name";
-            $response = self::runCurl($urlUnhide, $postData);
+            $response = self::runCurl($urlHideState, $postData);
         }
         return $response;
     }
