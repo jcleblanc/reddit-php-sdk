@@ -449,8 +449,8 @@ class reddit{
         
         $options = array(
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => 1,
-            CURLOPT_TIMEOUT => 3
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10
         );
         
         if (!empty($_SERVER['HTTP_USER_AGENT'])){
