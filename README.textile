@@ -133,6 +133,14 @@ $response = $reddit->search("penguins", 20);
 </pre>
 </notextile>
 
+*Get All Subreddits*
+<notextile>
+<pre>
+$response = $reddit->getAllSubs("new", 5);
+$response = $reddit->getAllSubs("popular", 45);
+</pre>
+</notextile>
+
 *Add Comment*
 <notextile>
 <pre>

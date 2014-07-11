@@ -216,6 +216,29 @@ class reddit{
     }
     
     /**
+    * Get all subreddits
+    *
+    * Get results for all subreddits combined, sorted by new / popular
+    * @link http://www.reddit.com/dev/api/oauth#GET_subreddits_{where}
+    * @param string $where The fetch method, either new or popular
+    * @param int $limit The number of results to return (max 100)
+    * @param string $after The fullname of a post which results should be returned after 
+    * @param string $before The fullname of a post which results should be returned before
+    */
+    public function getAllSubs($where = "popular", $limit = 25, $after = null, $before = null){
+        $qAfter = (!empty($after)) ? "&after=".$after : "";
+        $qBefore = (!empty($before)) ? "&before=".$before : "";
+        
+        $urlGetAll = sprintf("{$this->apiHost}/subreddits/%s?limit=%d%s%s",
+                              $where,
+                              $limit,
+                              $qAfter,
+                              $qBefore);
+        
+        return self::runCurl($urlGetAll);
+    }
+    
+    /**
     * Get page information
     *
     * Get information on a URLs submission on Reddit
