@@ -12,7 +12,7 @@ $reddit = new reddit();
 </pre>
 </notextile>
 
-h2. How to Build the Fullname Paramters
+h2. How to Build the Fullname Parameters
 
 Frequently within these SDK methods, you will see parameters that reference the fullname or id of a message, comment, account, etc (e.g. values like t4_1kuinv).  The Reddit API uses identifiers that consist of a prefix to identify the type of the fullname (e.g. t3_ or t4_), and the identifier of that thing (e.g. 1kuinv).  To build a fullname of a thing, you must take its id, and add the prefix to the front.
 
