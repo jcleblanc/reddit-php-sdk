@@ -30,6 +30,11 @@ h2. SDK Methods
 Once you are authenticated, you may then make requests to any of the methods in the SDK.  
 
 *Creating a New Story*
+Creates a new story on a particular subreddit
+@link http://www.reddit.com/dev/api/oauth#POST_api_submit
+@param string $title The title of the story
+@param string $link The link that the story should forward to
+@param string $subreddit The subreddit where the story should be added
 <notextile>
 <pre>
 $title = "MakerBot Releases IPad App For Easy 3D Printing";
@@ -40,6 +45,8 @@ $response = $reddit->createStory($title, $link, $subreddit);
 </notextile>
 
 *Get User Information*
+Get data for the current user
+@link http://www.reddit.com/dev/api#GET_api_v1_me
 <notextile>
 <pre>
 $userData = $reddit->getUser();
@@ -47,6 +54,9 @@ $userData = $reddit->getUser();
 </notextile>
 
 *Get Messages (inbox / unread / sent)*
+Get messages (inbox / unread / sent) for the current user
+@link http://www.reddit.com/dev/api/oauth#GET_message_inbox
+@param string $where The message type to return. One of inbox, unread, or sent
 <notextile>
 <pre>
 $response = $reddit->getMessages("inbox");  //get inbox messages
@@ -56,6 +66,11 @@ $response = $reddit->getMessages("sent");   //get sent messages
 </notextile>
 
 *Send a Message to Another User*
+Send a message to another user, from the current user
+@link http://www.reddit.com/dev/api/oauth#POST_api_compose
+@param string $to The name of a existing user to send the message to
+@param string $subject The subject of the message, no longer than 100 characters
+@param string $text The content of the message, in raw markdown
 <notextile>
 <pre>
 $response = $reddit->sendMessage("jcleblanc", "Look at this message!", "Hey!\n\n**[search!](http://www.google.com/)**");
@@ -63,6 +78,11 @@ $response = $reddit->sendMessage("jcleblanc", "Look at this message!", "Hey!\n\n
 </notextile>
 
 *Set the Read/Unread State of a Series of Messages*
+Sets the read and unread state of a comma separates list of messages
+@link http://www.reddit.com/dev/api/oauth#POST_api_read_message
+@link http://www.reddit.com/dev/api/oauth#POST_api_unread_message
+@param string $state The state to set the messages to, either read or unread
+@param string $subject A comma separated list of message fullnames (t4_ and the message id - e.g. t4_1kuinv). 
 <notextile>
 <pre>
 $response = $reddit->setMessageState("read", "t4_1kuinv,t4_1kriyc");
@@ -71,6 +91,9 @@ $response = $reddit->setMessageState("unread", "t4_1kuinv,t4_1kriyc");
 </notextile>
 
 *Block Content via Inbox*
+Sets a given piece of content to a blocked state via the inbox
+@link http://www.reddit.com/dev/api/oauth#POST_api_block
+@param string $id The full name of the content to block (e.g. t4_ and the message id - t4_1kuinv). 
 <notextile>
 <pre>
 $response = $reddit->setContentBlock("t4_1kuinv");
@@ -78,6 +101,9 @@ $response = $reddit->setContentBlock("t4_1kuinv");
 </notextile>
 
 *Get User Subscriptions*
+Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
+@link http://www.reddit.com/dev/api#GET_subreddits_mine_contributor
+@param string $where The subscription content to obtain. One of subscriber, contributor, or moderator
 <notextile>
 <pre>
 $subscriptions = $reddit->getSubscriptions();
@@ -85,6 +111,9 @@ $subscriptions = $reddit->getSubscriptions();
 </notextile>
 
 *Get Page Information*
+Get information on a URLs submission on Reddit
+@link http://www.reddit.com/dev/api#GET_api_info
+@param string $url The URL to get information for
 <notextile>
 <pre>
 $pageInfo = $reddit->getPageInfo("http://i.imgur.com/QxdCd.jpg");
@@ -92,6 +121,13 @@ $pageInfo = $reddit->getPageInfo("http://i.imgur.com/QxdCd.jpg");
 </notextile>
 
 *Save Story*
+Save a post to your account.  Save feeds:
+http://www.reddit.com/saved/.xml
+http://www.reddit.com/saved/.json
+@link http://www.reddit.com/dev/api#POST_api_save
+@param string $name the full name of the post to save (name parameter
+                    in the getSubscriptions() return value)
+@param string $category the categorty to save the post to  
 <notextile>
 <pre>
 $response = $reddit->savePost("t3_n6ocq");
@@ -99,6 +135,10 @@ $response = $reddit->savePost("t3_n6ocq");
 </notextile>
 
 *Unsave Story*
+Unsave a saved post from your account
+@link http://www.reddit.com/dev/api#POST_api_unsave
+@param string $name the full name of the post to unsave (name parameter
+                     in the getSubscriptions() return value)
 <notextile>
 <pre>
 $response = $reddit->unsavePost("t3_n6ocq");
@@ -106,6 +146,12 @@ $response = $reddit->unsavePost("t3_n6ocq");
 </notextile>
 
 *Hide or Unhide Post*
+Hide or unhide a post on your account
+@link http://www.reddit.com/dev/api/oauth#POST_api_hide
+@link http://www.reddit.com/dev/api/oauth#POST_api_unhide
+@param string $state The state to set the post to, either hide or unhide
+@param string $name The full name of the post to hide or unhide (name
+                     parameter in the getSubscriptions() return value)
 <notextile>
 <pre>
 $response = $reddit->setPostHideState("hide", "t3_n6ocq");
@@ -114,6 +160,10 @@ $response = $reddit->setPostHideState("unhide", "t3_n6ocq");
 </notextile>
 
 *Get Posts*
+Get the listing of submissions from a subreddit
+@link http://www.reddit.com/dev/api#GET_listing
+@param string $sr The subreddit name. Ex: technology, limit (integer): The number of posts to gather
+@param int $limit The number of listings to return
 <notextile>
 <pre>
 $response = $reddit->getListing("technology", 5);
@@ -121,6 +171,10 @@ $response = $reddit->getListing("technology", 5);
 </notextile>
 
 *Get Historic User Data*
+Get the historical data of a user
+@link http://www.reddit.com/dev/api/oauth#scope_history
+@param string $username the desired user. Must be already authenticated.
+@param string $where the data to retrieve. One of overview,submitted,comments,liked,disliked,hidden,saved,gilded
 <notextile>
 <pre>
 $response = $reddit->getHistory("USERNAME", "liked");
@@ -128,6 +182,8 @@ $response = $reddit->getHistory("USERNAME", "liked");
 </notextile>
 
 *Get Raw JSON*
+Get Raw JSON for a reddit permalink
+@param string $permalink permalink to get raw JSON for
 <notextile>
 <pre>
 $response = $reddit->getRawJSON("/r/funny/comments/12ma0a/this_guy_showed_up_at_our_party_last_night_didnt/");
@@ -140,6 +196,12 @@ $response2 = $reddit->getRawJSON($response1->data->children[0)]->data->permalink
 </notextile>
 
 *Search All Subreddits*
+Get the listing of submissions from a subreddit
+@link http://www.reddit.com/dev/api/oauth#GET_subreddits_search
+@param string $query The query to search for
+@param int $count The number of results to return
+@param string $after The fullname of a thing to search for results after
+@param string $before The fullname of a thing to search for results before
 <notextile>
 <pre>
 $response = $reddit->search("penguins", 20);
@@ -147,6 +209,12 @@ $response = $reddit->search("penguins", 20);
 </notextile>
 
 *Get All Subreddits*
+Get results for all subreddits combined, sorted by new / popular
+@link http://www.reddit.com/dev/api/oauth#GET_subreddits_{where}
+@param string $where The fetch method, either new or popular
+@param int $limit The number of results to return (max 100)
+@param string $after The fullname of a post which results should be returned after 
+@param string $before The fullname of a post which results should be returned before
 <notextile>
 <pre>
 $response = $reddit->getAllSubs("new", 5);
@@ -155,6 +223,11 @@ $response = $reddit->getAllSubs("popular", 45);
 </notextile>
 
 *Add Comment*
+Add a new comment to a story
+@link http://www.reddit.com/dev/api/oauth#POST_api_comment
+@param string $name The full name of the post to comment (name parameter
+                    in the getSubscriptions() return value)
+@param string $text The comment markup
 <notextile>
 <pre>
 $response = $reddit->addComment("t3_jp2k7", "Hey!\n\n**[search!](http://www.google.com/)**");
@@ -162,6 +235,12 @@ $response = $reddit->addComment("t3_jp2k7", "Hey!\n\n**[search!](http://www.goog
 </notextile>
 
 *Add Vote*
+Adds a vote (up / down / neutral) on a story
+@link http://www.reddit.com/dev/api/oauth#POST_api_vote
+@param string $name The full name of the post to vote on (name parameter
+                     in the getSubscriptions() return value)
+@param int $vote The vote to be made (1 = upvote, 0 = no vote,
+                  -1 = downvote)
 <notextile>
 <pre>
 $response = $reddit->addVote("t3_n6ocq", 1);
@@ -169,6 +248,12 @@ $response = $reddit->addVote("t3_n6ocq", 1);
 </notextile>
 
 *Set or Clear a User's Flair in a Subreddit*
+Set or clear a user's flair in a subreddit
+@link http://www.reddit.com/dev/api/oauth#POST_api_flair
+@param string $subreddit The subreddit to use
+@param string $user The name of the user
+@param string $text Flair text to assign
+@param string $cssClass CSS class to assign to the flair text
 <notextile>
 <pre>
 $response = $reddit->setFlair("motorcycles", "jcleblanc", "ZZR600", "kawasaki");
@@ -176,6 +261,12 @@ $response = $reddit->setFlair("motorcycles", "jcleblanc", "ZZR600", "kawasaki");
 </notextile>
 
 *Download the Flair Assignments of a Subreddit*
+Download the flair assignments of a subreddit
+@link http://www.reddit.com/dev/api/oauth#GET_api_flairlist
+@param string $subreddit The subreddit to use
+@param int $limit The maximum number of items to return (max 1000)
+@param string $after Return entries starting after this user
+@param string $before Return entries starting before this user
 <notextile>
 <pre>
 $response = $reddit->getFlairList("motorcycles", 100, "t2_39qab", "t2_39qab");
@@ -183,6 +274,10 @@ $response = $reddit->getFlairList("motorcycles", 100, "t2_39qab", "t2_39qab");
 </notextile>
 
 *Post a CSV File of Flair Settings to a Subreddit*
+Post a CSV file of flair settings to a subreddit
+@link http://www.reddit.com/dev/api/oauth#POST_api_flaircsv
+@param string $subreddit The subreddit to use
+@param string $flairCSV CSV file contents, up to 100 lines
 <notextile>
 <pre>
 $response = $reddit->setFlairCSV("motorcycles", "jcleblanc,ZZR600,kawasaki\n...");
