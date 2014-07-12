@@ -33,13 +33,11 @@ Once you are authenticated, you may then make requests to any of the methods in 
 <notextile>
 <pre>
 /**
-* Create new story
-    *
-    * Creates a new story on a particular subreddit
-    * @link http://www.reddit.com/dev/api/oauth#POST_api_submit
-    * @param string $title The title of the story
-    * @param string $link The link that the story should forward to
-    * @param string $subreddit The subreddit where the story should be added
+Creates a new story on a particular subreddit
+@link http://www.reddit.com/dev/api/oauth#POST_api_submit
+@param string $title The title of the story
+@param string $link The link that the story should forward to
+@param string $subreddit The subreddit where the story should be added
 */
 $title = "MakerBot Releases IPad App For Easy 3D Printing";
 $link = "http://makezine.com/2014/07/01/makerbot-realeases-ipad-app-for-easy-3d-printing/";
