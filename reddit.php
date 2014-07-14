@@ -103,6 +103,17 @@ class reddit{
     }
     
     /**
+    * Get user karma breakdown
+    *
+    * Get breakdown of karma for the current user
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_karma
+    */
+    public function getKarma(){
+        $urlKarma = "{$this->apiHost}/api/v1/me/karma";
+        return self::runCurl($urlKarma);
+    }
+    
+    /**
     * Get friend information
     *
     * Get information about a specified friend
@@ -110,8 +121,32 @@ class reddit{
     * @param string $username The username of a friend to search for details on
     */
     public function getFriendInfo($username){
-        $urlUser = "{$this->apiHost}/api/v1/me/friends/$username";
-        return self::runCurl($urlUser);
+        $urlFriendInfo = "{$this->apiHost}/api/v1/me/friends/$username";
+        return self::runCurl($urlFriendInfo);
+    }
+    
+    /**
+    * Get user subreddit relationships
+    *
+    * Get relationship information for subreddits that user belongs to
+    * @link http://www.reddit.com/dev/api/oauth#GET_subreddits_mine_{where}
+    * @param string $where The subreddit relationship to search for.  One of
+    *                       subscriber, contributor, or moderator
+    * @param int $limit The number of results to return. Default = 25, Max = 100.
+    * @param string $after The fullname of a thing to return results after
+    * @param string $before The fullname of a thing to return results before
+    */
+    public function getSubRel($where = "subscriber", $limit = 25, $after = null, $before = null){
+        $qAfter = (!empty($after)) ? "&after=".$after : "";
+        $qBefore = (!empty($before)) ? "&before=".$before : "";
+        
+        $urlSubRel = sprintf("{$this->apiHost}/subreddits/mine/$where?limit=%s%s%s",
+                              $where,
+                              $limit,
+                              $qAfter,
+                              $qBefore);
+        
+        return self::runCurl($urlSubRel);
     }
     
     /**

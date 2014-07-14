@@ -53,6 +53,15 @@ $userData = $reddit->getUser();
 </pre>
 </notextile>
 
+*Get User Karma Information*
+Get breakdown of karma for the current user
+@link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_karma
+<notextile>
+<pre>
+$karma = $reddit->getKarma();
+</pre>
+</notextile>
+
 *Get Friend Information*
 Get information about a specified friend
 @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_friends_{username}
@@ -60,6 +69,20 @@ Get information about a specified friend
 <notextile>
 <pre>
 $response = $reddit->getFriendInfo("jcleblanc");
+</pre>
+</notextile>
+
+*Get Subreddit Relationship Information*
+Get relationship information for subreddits that user belongs to
+@link http://www.reddit.com/dev/api/oauth#GET_subreddits_mine_{where}
+@param string $where The subreddit relationship to search for.  One of
+                      subscriber, contributor, or moderator
+@param int $limit The number of results to return. Default = 25, Max = 100.
+@param string $after The fullname of a thing to return results after
+@param string $before The fullname of a thing to return results before
+<notextile>
+<pre>
+$subRel = $reddit->getSubRel("subscriber", 15);
 </pre>
 </notextile>
 
