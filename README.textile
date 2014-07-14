@@ -53,6 +53,26 @@ $userData = $reddit->getUser();
 </pre>
 </notextile>
 
+*Get User Preferences*
+Get preference data for the current user based on fields provided
+@link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_prefs
+@param string $fields A comma separated list of pref data to return. Full list at
+                       http://www.reddit.com/dev/api/oauth#GET_api_v1_me_prefs.
+<notextile>
+<pre>
+$userPrefs = $reddit->getUserPrefs("num_comments,min_comment_score,private_feeds");
+</pre>
+</notextile>
+
+*Get User Trophies*
+Get current user trophies
+@link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_trophies
+<notextile>
+<pre>
+$userTrophies = $reddit->getUserTrophies();
+</pre>
+</notextile>
+
 *Get User Karma Information*
 Get breakdown of karma for the current user
 @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_karma

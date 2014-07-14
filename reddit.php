@@ -103,6 +103,35 @@ class reddit{
     }
     
     /**
+    * Get user preferences
+    *
+    * Get preference data for the current user based on fields provided
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_prefs
+    * @param string $fields A comma separated list of pref data to return. Full list at http://www.reddit.com/dev/api/oauth#GET_api_v1_me_prefs.
+    */
+    public function getUserPrefs($fields = null){
+        $response = null;
+        
+        if ($fields){
+            $urlUserPrefs = "{$this->apiHost}/api/v1/me/prefs?fields=$fields";
+            $response = self::runCurl($urlUserPrefs);
+        }
+        
+        return $response;
+    }
+    
+    /**
+    * Get user trophies
+    *
+    * Get current user trophies
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_trophies
+    */
+    public function getUserTrophies(){
+        $urlUserTrophies = "{$this->apiHost}/api/v1/me/trophies";
+        return self::runCurl($urlUserTrophies);
+    }
+    
+    /**
     * Get user karma breakdown
     *
     * Get breakdown of karma for the current user
