@@ -53,7 +53,7 @@ $userData = $reddit->getUser();
 </pre>
 </notextile>
 
-*Get User Information*
+*Get Friend Information*
 Get information about a specified friend
 @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_friends_{username}
 @param string $username The username of a friend to search for details on
