@@ -99,7 +99,19 @@ class reddit{
     */
     public function getUser(){
         $urlUser = "{$this->apiHost}/api/v1/me";
-        return self::runCurl($urlUser, null, true);
+        return self::runCurl($urlUser);
+    }
+    
+    /**
+    * Get friend information
+    *
+    * Get information about a specified friend
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_v1_me_friends_{username}
+    * @param string $username The username of a friend to search for details on
+    */
+    public function getFriendInfo($username){
+        $urlUser = "{$this->apiHost}/api/v1/me/friends/$username";
+        return self::runCurl($urlUser);
     }
     
     /**
