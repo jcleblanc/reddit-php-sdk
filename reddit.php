@@ -302,6 +302,22 @@ class reddit{
     }
     
     /**
+    * Get Subreddit Text
+    *
+    * Get the submission text for a given subreddit
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_submit_text.json
+    * @param string $sr The subreddit to get submission text for
+    */
+    public function getSubText($sr = null){
+        $response = null;
+        if ($sr){
+            $urlSubText = "{$this->apiHost}/r/$sr/api/submit_text.json";
+            $response = self::runCurl($urlSubText);
+        }
+        return $response;
+    }
+    
+    /**
     * Get Raw JSON
     *
     * Get Raw JSON for a reddit permalink

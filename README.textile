@@ -153,6 +153,16 @@ $pageInfo = $reddit->getPageInfo("http://i.imgur.com/QxdCd.jpg");
 </pre>
 </notextile>
 
+*Get Subreddit Text*
+Get the submission text for a given subreddit
+@link http://www.reddit.com/dev/api/oauth#GET_api_submit_text.json
+@param string $sr The subreddit to get submission text for
+<notextile>
+<pre>
+$subText = $reddit->getSubText("politics");
+</pre>
+</notextile>
+
 *Save Story*
 Save a post to your account.  Save feeds:
 http://www.reddit.com/saved/.xml
