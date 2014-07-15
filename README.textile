@@ -190,7 +190,7 @@ http://www.reddit.com/saved/.json
 @link http://www.reddit.com/dev/api#POST_api_save
 @param string $name the full name of the post to save (name parameter
                     in the getSubscriptions() return value)
-@param string $category the categorty to save the post to  
+@param string $category the categorty to save the post to (Reddit gold only)
 <notextile>
 <pre>
 $response = $reddit->savePost("t3_n6ocq");
@@ -205,6 +205,15 @@ Unsave a saved post from your account
 <notextile>
 <pre>
 $response = $reddit->unsavePost("t3_n6ocq");
+</pre>
+</notextile>
+
+*Get Saved Categories (Reddit gold only)*
+Get a list of categories in which things are currently saved
+@link http://www.reddit.com/dev/api/oauth#GET_api_saved_categories.json
+<notextile>
+<pre>
+$savedCats = $reddit->getSavedCats();
 </pre>
 </notextile>
 

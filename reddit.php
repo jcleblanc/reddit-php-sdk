@@ -400,6 +400,17 @@ class reddit{
     }
     
     /**
+    * Get saved categories
+    *
+    * Get a list of categories in which things are currently saved
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_saved_categories.json
+    */
+    public function getSavedCats(){
+        $urlSavedCats = "{$this->apiHost}/api/saved_categories";
+        return self::runCurl($urlSavedCats);
+    }
+    
+    /**
     * Get historical user data
     *
     * Get the historical data of a user
