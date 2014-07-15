@@ -424,21 +424,22 @@ class reddit{
     }
     
     /**
-    * Set post hide state
+    * Set post report state
     *
-    * Hide or unhide a post on your account
+    * Hide, unhide, or report a post on your account
     * @link http://www.reddit.com/dev/api/oauth#POST_api_hide
     * @link http://www.reddit.com/dev/api/oauth#POST_api_unhide
-    * @param string $state The state to set the post to, either hide or unhide
-    * @param string $name The full name of the post to hide or unhide (name
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_report
+    * @param string $state The state to set the post to, either hide, unhide, or report
+    * @param string $name The fullname of the post to hide, unhide, or report (name
     *                parameter in the getSubscriptions() return value)
     */
-    public function setPostHideState($state = "hide", $name){
+    public function setPostReportState($state = "hide", $name){
         $response = null;
         if ($name){
-            $urlHideState = "{$this->apiHost}/api/$state";
+            $urlReportState = "{$this->apiHost}/api/$state";
             $postData = "id=$name";
-            $response = self::runCurl($urlHideState, $postData);
+            $response = self::runCurl($urlReportState, $postData);
         }
         return $response;
     }

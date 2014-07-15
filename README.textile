@@ -217,17 +217,20 @@ $savedCats = $reddit->getSavedCats();
 </pre>
 </notextile>
 
-*Hide or Unhide Post*
+*Hide, Unhide, or Report Post*
 Hide or unhide a post on your account
+Hide, unhide, or report a post on your account
 @link http://www.reddit.com/dev/api/oauth#POST_api_hide
 @link http://www.reddit.com/dev/api/oauth#POST_api_unhide
-@param string $state The state to set the post to, either hide or unhide
-@param string $name The full name of the post to hide or unhide (name
+@link http://www.reddit.com/dev/api/oauth#POST_api_report
+@param string $state The state to set the post to, either hide, unhide, or report
+@param string $name The fullname of the post to hide, unhide, or report (name
                      parameter in the getSubscriptions() return value)
 <notextile>
 <pre>
-$response = $reddit->setPostHideState("hide", "t3_n6ocq");
-$response = $reddit->setPostHideState("unhide", "t3_n6ocq");
+$response = $reddit->setPostReportState("hide", "t3_n6ocq");
+$response = $reddit->setPostReportState("unhide", "t3_n6ocq");
+$response = $reddit->setPostReportState("report", "t3_n6ocq");
 </pre>
 </notextile>
 
