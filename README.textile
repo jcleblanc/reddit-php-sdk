@@ -27,7 +27,38 @@ The following is a list of prefixes that the Reddit API uses, and the type of th
 
 h2. SDK Methods
 
-Once you are authenticated, you may then make requests to any of the methods in the SDK.  
+Once you are authenticated, you may then make requests to any of the methods in the SDK.
+
+*Needs CAPTCHA*
+Checks whether CAPTCHAs are needed for API endpoints
+@link http://www.reddit.com/dev/api/oauth#GET_api_needs_captcha.json
+<notextile>
+<pre>
+$response = $reddit->getCaptchaReqs();
+</pre>
+</notextile>
+
+*Get New CAPTCHA*
+Gets the iden of a new CAPTCHA, if the user cannot read the current one
+@link http://www.reddit.com/dev/api/oauth#POST_api_new_captcha
+<notextile>
+<pre>
+$response = $reddit->getNewCaptcha();
+$iden = $response->json->data->iden;
+</pre>
+</notextile>
+
+*Get CAPTCHA Image*
+Fetches a new CAPTCHA image from a given iden value
+@link http://www.reddit.com/dev/api/oauth#GET_captcha_{iden}
+@param string $iden The iden value of a new CAPTCHA from getNewCaptcha method
+<notextile>
+<pre>
+$response = $reddit->getNewCaptcha();
+$iden = $response->json->data->iden;
+$image = $reddit->getCaptchaImg($iden);
+</pre>
+</notextile>
 
 *Creating a New Story*
 Creates a new story on a particular subreddit

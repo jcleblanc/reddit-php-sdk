@@ -60,6 +60,41 @@ class reddit{
     }
     
     /**
+    * Needs CAPTCHA
+    *
+    * Checks whether CAPTCHAs are needed for API endpoints
+    * @link http://www.reddit.com/dev/api/oauth#GET_api_needs_captcha.json
+    */
+    public function getCaptchaReqs(){
+        $urlNeedsCaptcha = "{$this->apiHost}/api/needs_captcha.json";
+        return self::runCurl($urlNeedsCaptcha);
+    }
+    
+    /**
+    * Get New CAPTCHA
+    *
+    * Gets the iden of a new CAPTCHA, if the user cannot read the current one
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_new_captcha
+    */
+    public function getNewCaptcha(){
+        $urlNewCaptcha = "{$this->apiHost}/api/new_captcha";
+        $postData = "api_type=json";
+        return self::runCurl($urlNewCaptcha, $postData);
+    }
+    
+    /**
+    * Get CAPTCHA Image
+    *
+    * Fetches a new CAPTCHA image from a given iden value
+    * @link http://www.reddit.com/dev/api/oauth#GET_captcha_{iden}
+    * @param string $iden The iden value of a new CAPTCHA from getNewCaptcha method
+    */
+    public function getCaptchaImg($iden){
+        $urlCaptchaImg = "{$this->apiHost}/captcha/$iden";
+        return self::runCurl($urlCaptchaImg);
+    }
+    
+    /**
     * Create new story
     *
     * Creates a new story on a particular subreddit
@@ -582,8 +617,13 @@ class reddit{
         }
         
         curl_setopt_array($ch, $options);
-        $response = curl_exec($ch);
-        $response = json_decode($response);
+        $apiResponse = curl_exec($ch);
+        $response = json_decode($apiResponse);
+        
+        //check if non-valid JSON is returned
+        if ($error = json_last_error()){
+            $response = $apiResponse;    
+        }
         curl_close($ch);
         
         return $response;
