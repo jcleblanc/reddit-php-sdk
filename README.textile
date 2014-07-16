@@ -57,8 +57,6 @@ Fetches a new CAPTCHA image from a given iden value
 $response = $reddit->getNewCaptcha();
 $iden = $response->json->data->iden;
 $image = $reddit->getCaptchaImg($iden);
-
-//create and display image from stream
 $im = imagecreatefromstring($image);
 if ($im !== false){
     header('Content-Type: image/png');
