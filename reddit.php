@@ -274,6 +274,19 @@ class reddit{
     }
     
     /**
+    * Delete link or comment
+    *
+    * Deletes a given link or comment created by the user
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_del
+    * @param string $id The fullname of the link or comment to delete (e.g. t3_1kuinv for link, t1_1kuinv for comment). 
+    */
+    public function deleteContent($id){
+        $urlDelContent = "{$this->apiHost}/api/del";
+        $postData = "id=$id";
+        return self::runCurl($urlDelContent, $postData);
+    }
+    
+    /**
     * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
