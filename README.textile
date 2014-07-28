@@ -203,6 +203,28 @@ $response = $reddit->deleteContent("t3_1kuinv");  //link
 </pre>
 </notextile>
 
+*Edit Comment or Self Post*
+Edits the content of a self post or comment created by the user
+@link http://www.reddit.com/dev/api/oauth#POST_api_editusertext
+@param string $id The fullname of the link or comment to delete (e.g. t3_1kuinv for link, t1_1kuinv for comment).
+@param string $text The raw markdown text to replace the content with. 
+<notextile>
+<pre>
+$response = $reddit->editContent("t1_cj9qdna", "test\n\n**[test link](http://www.google.com/)**");
+</pre>
+</notextile>
+
+*Set Link Reply State*
+Enable or disable inbox replies for a link
+@link http://www.reddit.com/dev/api/oauth#POST_api_sendreplies
+@param string $id The fullname of the link to set the inbox reply state for.
+@param bool $state The state to set the link to.  true = enable inbox replies, false = disable inbox replies.
+<notextile>
+<pre>
+$response = $reddit->setReplyState("t3_2bxop3", true);
+</pre>
+</notextile>
+
 *Get User Subscriptions*
 Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
 @link http://www.reddit.com/dev/api#GET_subreddits_mine_contributor

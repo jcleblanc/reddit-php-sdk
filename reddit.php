@@ -287,6 +287,37 @@ class reddit{
     }
     
     /**
+    * Edit comment or self post
+    *
+    * Edits the content of a self post or comment created by the user
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_editusertext
+    * @param string $id The fullname of the link or comment to delete (e.g. t3_1kuinv for link, t1_1kuinv for comment).
+    * @param string $text The raw markdown text to replace the content with. 
+    */
+    public function editContent($id, $text){
+        $urlEditContent = "{$this->apiHost}/api/editusertext";
+        $postData = sprintf("thing_id=%s&text=%s&api_type=json",
+                              $id,
+                              $text);
+        
+        return self::runCurl($urlEditContent, $postData);
+    }
+    
+    /**
+    * Set Link Reply State
+    *
+    * Enable or disable inbox replies for a link
+    * @link http://www.reddit.com/dev/api/oauth#POST_api_sendreplies
+    * @param string $id The fullname of the link to set the inbox reply state for.
+    * @param bool $state The state to set the link to.  true = enable inbox replies, false = disable inbox replies.
+    */
+    public function setReplyState($id, $state){
+        $urlReplyState = "{$this->apiHost}/api/sendreplies";
+        $postData = "id=$id&state=$state";
+        return self::runCurl($urlReplyState, $postData);
+    }
+    
+    /**
     * Get user subscriptions
     *
     * Get the subscriptions that the user is subscribed to, has contributed to, or is moderator of
