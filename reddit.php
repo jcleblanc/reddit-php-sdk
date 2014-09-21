@@ -21,42 +21,52 @@ class reddit{
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
     */
     public function __construct(){
-        if (isset($_GET['code'])){
-            //capture code from auth
-            $code = $_GET["code"];
-            
-            //construct POST object for access token fetch request
-            $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
-                                $code,
-                                ENDPOINT_OAUTH_REDIRECT,
-                                CLIENT_ID);
-            
-            //get JSON access token object (with refresh_token parameter)
-            $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
-            
-            //store token and type
-            if (isset($token->access_token)){
-                $this->access_token = $token->access_token;
-                $this->token_type = $token->token_type;
-            }
-            
-            //set API endpoint
-            $this->apiHost = ENDPOINT_OAUTH;
-            
-            //set auth mode for requests
-            $this->auth_mode = 'oauth';
-        } else {
-            $state = rand();
-            $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                               ENDPOINT_OAUTH_AUTHORIZE,
-                               CLIENT_ID,
-                               ENDPOINT_OAUTH_REDIRECT,
-                               SCOPES,
-                               $state);
+        if(isset($_COOKIE['reddit_token'])){
+            $token_info = explode(":", $_COOKIE['reddit_token']); 
+            $this->token_type = $token_info[0];
+            $this->access_token = $token_info[1];
+        } else { 
+            if (isset($_GET['code'])){
+                //capture code from auth
+                $code = $_GET["code"];
                 
-            //forward user to PayPal auth page
-            header("Location: $urlAuth");
+                //construct POST object for access token fetch request
+                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
+                                    $code,
+                                    ENDPOINT_OAUTH_REDIRECT,
+                                    CLIENT_ID);
+                
+                //get JSON access token object (with refresh_token parameter)
+                $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+                
+                //store token and type
+                if (isset($token->access_token)){
+                    $this->access_token = $token->access_token;
+                    $this->token_type = $token->token_type;
+                    
+                    //set token cookie for later use
+                    $cookie_time = 60 * 60 * 24 * 14 + time();  //seconds * minutes * hours * days - 2 weeks 
+                    setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
+                }
+            } else {
+                $state = rand();
+                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                                   ENDPOINT_OAUTH_AUTHORIZE,
+                                   CLIENT_ID,
+                                   ENDPOINT_OAUTH_REDIRECT,
+                                   SCOPES,
+                                   $state);
+                    
+                //forward user to PayPal auth page
+                header("Location: $urlAuth");
+            }
         }
+        
+        //set API endpoint
+        $this->apiHost = ENDPOINT_OAUTH;
+                
+        //set auth mode for requests
+        $this->auth_mode = 'oauth';
     }
     
     /**
