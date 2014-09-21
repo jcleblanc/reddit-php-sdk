@@ -33,11 +33,11 @@ class reddit{
                 //construct POST object for access token fetch request
                 $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
                                     $code,
-                                    ENDPOINT_OAUTH_REDIRECT,
-                                    CLIENT_ID);
+                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                    redditConfig::$CLIENT_ID);
                 
                 //get JSON access token object (with refresh_token parameter)
-                $token = self::runCurl(ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+                $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
                 
                 //store token and type
                 if (isset($token->access_token)){
@@ -45,16 +45,16 @@ class reddit{
                     $this->token_type = $token->token_type;
                     
                     //set token cookie for later use
-                    $cookie_time = 60 * 59 + time();  //seconds * minutes * hours * days = 59 minutes (token expires in 1hr) 
+                    $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
                     setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
                 }
             } else {
                 $state = rand();
                 $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                                   ENDPOINT_OAUTH_AUTHORIZE,
-                                   CLIENT_ID,
-                                   ENDPOINT_OAUTH_REDIRECT,
-                                   SCOPES,
+                                   redditConfig::$ENDPOINT_OAUTH_AUTHORIZE,
+                                   redditConfig::$CLIENT_ID,
+                                   redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                   redditConfig::$SCOPES,
                                    $state);
                     
                 //forward user to PayPal auth page
@@ -63,7 +63,7 @@ class reddit{
         }
         
         //set API endpoint
-        $this->apiHost = ENDPOINT_OAUTH;
+        $this->apiHost = redditConfig::$ENDPOINT_OAUTH;
                 
         //set auth mode for requests
         $this->auth_mode = 'oauth';
@@ -664,7 +664,7 @@ class reddit{
         
         if ($auth){
             $options[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
-            $options[CURLOPT_USERPWD] = CLIENT_ID . ":" . CLIENT_SECRET;
+            $options[CURLOPT_USERPWD] = redditConfig::$CLIENT_ID . ":" . redditConfig::$CLIENT_SECRET;
             $options[CURLOPT_SSLVERSION] = 3;
             $options[CURLOPT_SSL_VERIFYPEER] = false;
             $options[CURLOPT_SSL_VERIFYHOST] = 2;

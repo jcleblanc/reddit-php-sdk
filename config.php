@@ -1,15 +1,17 @@
 <?php
-//oauth token fetch and api request endpoints
-define("ENDPOINT_OAUTH", "https://oauth.reddit.com");
-define('ENDPOINT_OAUTH_AUTHORIZE', 'https://ssl.reddit.com/api/v1/authorize');
-define('ENDPOINT_OAUTH_TOKEN', 'https://ssl.reddit.com/api/v1/access_token');
-define('ENDPOINT_OAUTH_REDIRECT', 'http://localhost/reddit/test.php');
-
-//access token configuration from https://ssl.reddit.com/prefs/apps
-define('CLIENT_ID', 'YOUR CLIENT ID');
-define('CLIENT_SECRET', 'YOUR CLIENT SECRET');
-
-//access token request scopes
-//full list at http://www.reddit.com/dev/api/oauth
-define('SCOPES', 'modposts,identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiedit,wikiread');                                           
+class redditConfig{
+    //oauth token fetch and api request endpoints
+    static $ENDPOINT_OAUTH = 'https://oauth.reddit.com';
+    static $ENDPOINT_OAUTH_AUTHORIZE = 'https://ssl.reddit.com/api/v1/authorize';
+    static $ENDPOINT_OAUTH_TOKEN = 'https://ssl.reddit.com/api/v1/access_token';
+    static $ENDPOINT_OAUTH_REDIRECT = 'http://localhost/reddit/test.php';
+    
+    //access token configuration from https://ssl.reddit.com/prefs/apps
+    static $CLIENT_ID = 'YOUR CLIENT ID';
+    static $CLIENT_SECRET = 'YOUR CLIENT SECRET';
+    
+    //access token request scopes
+    //full list at http://www.reddit.com/dev/api/oauth
+    static $SCOPES = 'save,modposts,identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,submit,subscribe,vote,wikiedit,wikiread';
+}
 ?>
