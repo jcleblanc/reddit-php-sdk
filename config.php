@@ -1,6 +1,7 @@
 <?php
 class redditConfig{
-    //oauth token fetch and api request endpoints
+    //standard, oauth token fetch, and api request endpoints
+    static $ENDPOINT_STANDARD = 'http://www.reddit.com';
     static $ENDPOINT_OAUTH = 'https://oauth.reddit.com';
     static $ENDPOINT_OAUTH_AUTHORIZE = 'https://ssl.reddit.com/api/v1/authorize';
     static $ENDPOINT_OAUTH_TOKEN = 'https://ssl.reddit.com/api/v1/access_token';
