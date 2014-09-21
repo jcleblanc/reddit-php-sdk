@@ -45,7 +45,7 @@ class reddit{
                     $this->token_type = $token->token_type;
                     
                     //set token cookie for later use
-                    $cookie_time = 60 * 60 * 24 * 14 + time();  //seconds * minutes * hours * days - 2 weeks 
+                    $cookie_time = 60 * 59 + time();  //seconds * minutes * hours * days = 59 minutes (token expires in 1hr) 
                     setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
                 }
             } else {
