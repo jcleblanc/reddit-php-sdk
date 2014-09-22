@@ -356,6 +356,69 @@ class reddit{
         }
         return self::runCurl($urlListing);
     }
+
+    /**
+     * Get a wiki page
+     * 
+     * Gets a specific wiki page from a subreddit
+     * @link http://www.reddit.com/dev/api#GET_wiki_{page}
+     * @param string $sr The subreddit name
+     * @param string $page The name of the wiki page
+     */
+    public function getWikiPage($sr, $page) {
+        $urlWikiPage = "http://reddit.com/r/{$sr}/wiki/{$page}.json";
+        return self::runCurl($urlWikiPage);
+    }
+
+     /**
+     * Get a listing of wiki pages
+     * 
+     * Gets a listing of wiki pages for a subreddit
+     * @link http://www.reddit.com/dev/api#GET_wiki_pages
+     * @param string $sr The subreddit name
+     */
+    public function getWikiPages($sr) {
+        $urlWikiPages = "http://reddit.com/r/{$sr}/wiki/pages.json";
+        return self::runCurl($urlWikiPages);
+    }
+
+    /**
+     * Get a listing of Wiki page discussions
+     *
+     * Gets the listing of subreddits wiki page discussions
+     * @link http://www.reddit.com/dev/api#GET_wiki_discussions_{page}
+     * @param string $sr The subreddit name
+     * @param string $page The name of the wiki page
+     */
+    public function getWikiPageDiscussion($sr, $page) {
+        $urlWikiPageDiscussions = "http://reddit.com/r/{$sr}/wiki/discussions/{$page}.json";
+        return self::runCurl($urlWikiPageDiscussions);
+    }
+
+    /**
+     * Get a listing of wiki revisions
+     *
+     * Gets a listing of a subreddit's wiki pages revisions
+     * @link http://www.reddit.com/dev/api#GET_wiki_revisions
+     * @param string $sr The subreddit name
+     */
+    public function getWikiRevisions($sr) {
+        $urlWikiRevisions = "http://reddit.com/r/{$sr}/wiki/revisions.json";
+        return self::runCurl($urlWikiRevisions);
+    }
+
+    /**
+     * Get a listing of wiki page revisions
+     *
+     * Gets a listing of a specific wiki page's revisions
+     * @link http://www.reddit.com/dev/api#GET_wiki_revisions_{page}
+     * @param string $sr The subreddit name
+     * @param string $page The name of the wiki page
+     */
+    public function getWikiPageRevisions($sr, $page) {
+        $urlWikiPageRevisions = "http://reddit.com/r/{$sr}/wiki/revisions/{$page}.json";
+        return self::runCurl($urlWikiPageRevisions);
+    }
     
     /**
     * Search all subreddits
