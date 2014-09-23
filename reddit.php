@@ -12,15 +12,28 @@ require_once("config.php");
 class reddit{
     private $access_token;
     private $token_type;
-    private $auth_mode = "basic";
+    private $auth_mode = 'basic';
     
     /**
     * Class Constructor
     *
     * Construct the class and simultaneously log a user in.
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
+    * @param string $mode The auth mode to use, either oauth (default) or basic
     */
-    public function __construct(){
+    public function __construct($mode = 'oauth'){
+        if ($mode == 'oauth'){
+            self::init_oauth();
+        } else {
+            self::init_basic();
+        }
+    }
+    
+    public function init_basic(){
+        $this->apiHost = redditConfig::$ENDPOINT_STANDARD;
+    }
+    
+    public function init_oauth(){
         if(isset($_COOKIE['reddit_token'])){
             $token_info = explode(":", $_COOKIE['reddit_token']); 
             $this->token_type = $token_info[0];
@@ -64,7 +77,7 @@ class reddit{
         
         //set API endpoint
         $this->apiHost = redditConfig::$ENDPOINT_OAUTH;
-                
+        
         //set auth mode for requests
         $this->auth_mode = 'oauth';
     }
@@ -350,9 +363,9 @@ class reddit{
     public function getListing($sr, $limit = 5){
         $limit = (isset($limit)) ? "?limit=".$limit : "";
         if($sr == 'home' || $sr == 'reddit' || !isset($sr)){
-            $urlListing = "http://www.reddit.com/.json{$limit}";
+            $urlListing = "{$this->apiHost}/.json{$limit}";
         } else {
-            $urlListing = "http://www.reddit.com/r/{$sr}/.json{$limit}";
+            $urlListing = "{$this->apiHost}/r/{$sr}/.json{$limit}";
         }
         return self::runCurl($urlListing);
     }
@@ -442,7 +455,7 @@ class reddit{
     * @param string $permalink permalink to get raw JSON for
     */
     public function getRawJSON($permalink){
-        $urlListing = "http://www.reddit.com/{$permalink}.json";
+        $urlListing = "{$this->apiHost}/{$permalink}.json";
         return self::runCurl($urlListing);
     }  
          
