@@ -678,7 +678,7 @@ class reddit{
         if ($auth){
             $options[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
             $options[CURLOPT_USERPWD] = redditConfig::$CLIENT_ID . ":" . redditConfig::$CLIENT_SECRET;
-            $options[CURLOPT_SSLVERSION] = 3;
+            $options[CURLOPT_SSLVERSION] = 4;
             $options[CURLOPT_SSL_VERIFYPEER] = false;
             $options[CURLOPT_SSL_VERIFYHOST] = 2;
         }
