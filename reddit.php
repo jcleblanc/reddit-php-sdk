@@ -70,7 +70,7 @@ class reddit{
                                    redditConfig::$SCOPES,
                                    $state);
                     
-                //forward user to PayPal auth page
+                //forward user to Reddit auth page
                 header("Location: $urlAuth");
             }
         }
