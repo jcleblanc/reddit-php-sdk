@@ -34,7 +34,7 @@ class reddit{
     }
     
     public function init_oauth(){
-        if (redditConfig::$CLI) {
+        if ('cli' == php_sapi_name()) {
             //get JSON access token object
             $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, 'grant_type=client_credentials', null, true);
 
