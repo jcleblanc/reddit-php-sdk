@@ -34,44 +34,55 @@ class reddit{
     }
     
     public function init_oauth(){
-        if(isset($_COOKIE['reddit_token'])){
-            $token_info = explode(":", $_COOKIE['reddit_token']); 
-            $this->token_type = $token_info[0];
-            $this->access_token = $token_info[1];
-        } else { 
-            if (isset($_GET['code'])){
-                //capture code from auth
-                $code = $_GET["code"];
-                
-                //construct POST object for access token fetch request
-                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
-                                    $code,
-                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
-                                    redditConfig::$CLIENT_ID);
-                
-                //get JSON access token object (with refresh_token parameter)
-                $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
-                
-                //store token and type
-                if (isset($token->access_token)){
-                    $this->access_token = $token->access_token;
-                    $this->token_type = $token->token_type;
+        if ('cli' == php_sapi_name()) {
+            //get JSON access token object
+            $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, 'grant_type=client_credentials', null, true);
+
+            //store token and type
+            if (isset($token->access_token)){
+                $this->access_token = $token->access_token;
+                $this->token_type = $token->token_type;
+            }
+        } else {
+            if(isset($_COOKIE['reddit_token'])){
+                $token_info = explode(":", $_COOKIE['reddit_token']); 
+                $this->token_type = $token_info[0];
+                $this->access_token = $token_info[1];
+            } else { 
+                if (isset($_GET['code'])){
+                    //capture code from auth
+                    $code = $_GET["code"];
                     
-                    //set token cookie for later use
-                    $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
-                    setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
+                    //construct POST object for access token fetch request
+                    $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
+                                        $code,
+                                        redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                        redditConfig::$CLIENT_ID);
+                    
+                    //get JSON access token object (with refresh_token parameter)
+                    $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+
+                    //store token and type
+                    if (isset($token->access_token)){
+                        $this->access_token = $token->access_token;
+                        $this->token_type = $token->token_type;
+                        
+                        //set token cookie for later use
+                        $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
+                        setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
+                    }
+                } else {
+                    $state = rand();
+                    $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                                       redditConfig::$ENDPOINT_OAUTH_AUTHORIZE,
+                                       redditConfig::$CLIENT_ID,
+                                       redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                       redditConfig::$SCOPES,
+                                       $state);
+                        
+                    //forward user to Reddit auth page
+                    header("Location: $urlAuth");
                 }
-            } else {
-                $state = rand();
-                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
-                                   redditConfig::$ENDPOINT_OAUTH_AUTHORIZE,
-                                   redditConfig::$CLIENT_ID,
-                                   redditConfig::$ENDPOINT_OAUTH_REDIRECT,
-                                   redditConfig::$SCOPES,
-                                   $state);
-                    
-                //forward user to Reddit auth page
-                header("Location: $urlAuth");
             }
         }
         
@@ -732,7 +743,7 @@ class reddit{
         }
         
         if ($this->auth_mode == 'oauth'){
-            $headers = array("Authorization: {$this->token_type} {$this->access_token}");
+            $headers = array("Authorization: {$this->token_type} {$this->access_token}", "User-Agent: curl");
             $options[CURLOPT_HEADER] = false;
             $options[CURLINFO_HEADER_OUT] = false;
             $options[CURLOPT_HTTPHEADER] = $headers;
