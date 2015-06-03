@@ -14,5 +14,10 @@ class redditConfig{
     //access token request scopes
     //full list at http://www.reddit.com/dev/api/oauth
     static $SCOPES = 'save,modposts,identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,submit,subscribe,vote,wikiedit,wikiread';
+
+    //user agent for api requests
+    //see https://github.com/reddit/reddit/wiki/API
+    //leave empty ('') to use $_SERVER['HTTP_USER_AGENT'] if available
+    static $USER_AGENT = 'YOUR USER AGENT';
 }
 ?>
