@@ -19,21 +19,8 @@ class reddit{
     *
     * Construct the class and simultaneously log a user in.
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
-    * @param string $mode The auth mode to use, either oauth (default) or basic
     */
-    public function __construct($mode = 'oauth'){
-        if ($mode == 'oauth'){
-            self::init_oauth();
-        } else {
-            self::init_basic();
-        }
-    }
-    
-    public function init_basic(){
-        $this->apiHost = redditConfig::$ENDPOINT_STANDARD;
-    }
-    
-    public function init_oauth(){
+    public function __construct(){
         if(isset($_COOKIE['reddit_token'])){
             $token_info = explode(":", $_COOKIE['reddit_token']); 
             $this->token_type = $token_info[0];
