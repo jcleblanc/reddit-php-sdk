@@ -357,16 +357,43 @@ class reddit{
     }
     
     /**
-    * Search all subreddits
+    * Search listings
     *
     * Get the listing of submissions from a subreddit
+    * @link https://www.reddit.com/dev/api#GET_search
+    * @param string $query The query to search for
+    * @param int $count The number of results to return
+    * @param string $t The timeframe of results to return, one of (hour, day, week, month, year, all)
+    * @param string $after The fullname of a thing to search for results after
+    * @param string $before The fullname of a thing to search for results before
+    */
+    public function search($query, $subreddit, $count = 10, $t = null, $after = null, $before = null){
+        $time = (!empty($t)) ? "&t=$t" : "&t=all";
+        $qAfter = (!empty($after)) ? "&after=.$after" : "";
+        $qBefore = (!empty($before)) ? "&before=.$before" : "";
+        
+        $urlSearch = sprintf("{$this->apiHost}/r/%s/search?q=%s&count=%d%s%s%s",
+                            $subreddit,
+                            $query,
+                            $count,
+                            $time,
+                            $qAfter,
+                            $qBefore);
+        
+        return self::runCurl($urlSearch);
+    }
+    
+    /**
+    * Search subreddits
+    *
+    * Get the listing of subreddit from a search
     * @link http://www.reddit.com/dev/api/oauth#GET_subreddits_search
     * @param string $query The query to search for
     * @param int $count The number of results to return
     * @param string $after The fullname of a thing to search for results after
     * @param string $before The fullname of a thing to search for results before
     */
-    public function search($query, $count = 10, $after = null, $before = null){
+    public function search_sr($query, $count = 10, $after = null, $before = null){
         $qAfter = (!empty($after)) ? "&after=".$after : "";
         $qBefore = (!empty($before)) ? "&before=".$before : "";
         
