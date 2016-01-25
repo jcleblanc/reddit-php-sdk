@@ -672,7 +672,9 @@ class reddit{
             CURLOPT_TIMEOUT => 10
         );
         
-        if (!empty($_SERVER['HTTP_USER_AGENT'])){
+        if (!empty(redditConfig::$USER_AGENT)) {
+            $options[CURLOPT_USERAGENT] = redditConfig::$USER_AGENT;
+        } elseif (!empty($_SERVER['HTTP_USER_AGENT'])){
             $options[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
         }
         
