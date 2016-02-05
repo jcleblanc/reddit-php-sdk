@@ -11,52 +11,98 @@ require_once("config.php");
 */
 class reddit{
     private $access_token;
-    private $token_type;
+    private $token_type = 'bearer';
     private $auth_mode = 'basic';
+    static public $data;
     
     /**
     * Class Constructor
     *
     * Construct the class and simultaneously log a user in.
     * @link https://github.com/reddit/reddit/wiki/API%3A-login
+    * @param string $mode The auth mode to use, either oauth (default) or basic
     */
-    public function __construct(){
-        if(isset($_COOKIE['reddit_token'])){
-            $token_info = explode(":", $_COOKIE['reddit_token']); 
-            $this->token_type = $token_info[0];
-            $this->access_token = $token_info[1];
-        } else { 
+    public function __construct($mode = 'oauth'){
+        self::loadData();
+
+        if ($mode == 'oauth'){
+            self::init_oauth();
+        } else {
+            self::init_basic();
+        }
+    }
+    
+    public function init_basic(){
+        $this->apiHost = redditConfig::$ENDPOINT_STANDARD;
+    }
+    
+    public function init_oauth(){
+        if (isset(self::$data['access_token']) && time() < self::$data['access_token_expires']) {
+            $this->access_token = self::$data['access_token'];
+        }
+        elseif (isset(self::$data['refresh_token'])) {
+            $refreshToken = self::$data['refresh_token'];
+            
+            //construct POST object for access token fetch request
+            $postvals = sprintf("grant_type=refresh_token&refresh_token=%s",
+                    $refreshToken,
+                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                    redditConfig::$CLIENT_ID);
+            
+            //get JSON access token object (with refresh_token parameter)
+            $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+                        
+            //store token and type
+            if (isset($token['access_token'])){
+                $this->access_token = $token['access_token'];
+                $this->token_type = $token['token_type'];
+                
+                //set token cookie for later use
+                self::$data['access_token'] = $this->access_token;
+                self::$data['access_token_expires'] = time() + 3600;
+                self::saveData();
+            }
+        }
+        else { 
             if (isset($_GET['code'])){
                 //capture code from auth
                 $code = $_GET["code"];
                 
                 //construct POST object for access token fetch request
-                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code",
+                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code&client_id=%s",
                                     $code,
-                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT);
+                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                    redditConfig::$CLIENT_ID);
                 
                 //get JSON access token object (with refresh_token parameter)
                 $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
                 
                 //store token and type
-                if (isset($token->access_token)){
-                    $this->access_token = $token->access_token;
-                    $this->token_type = $token->token_type;
+
+                if (isset($token['access_token'])){
+                    $this->access_token = $token['access_token'];
+                    $this->token_type = $token['token_type'];
                     
                     //set token cookie for later use
-                    $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
-                    setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
+                    self::$data['access_token'] = $this->access_token;
+                    self::$data['access_token_expires'] = time() + 3600;
                 }
+                if (isset($token['refresh_token'])){
+                    //set refresh token cookie for later use
+                    self::$data['refresh_token'] = $token['refresh_token'];
+                }
+                self::saveData();
+
             } else {
-                $state = rand();
-                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                $state = mt_rand();
+                $urlAuth = sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s&duration=permanent",
                                    redditConfig::$ENDPOINT_OAUTH_AUTHORIZE,
                                    redditConfig::$CLIENT_ID,
                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
                                    redditConfig::$SCOPES,
                                    $state);
                     
-                //forward user to PayPal auth page
+                //forward user to Reddit auth page
                 header("Location: $urlAuth");
             }
         }
@@ -672,9 +718,7 @@ class reddit{
             CURLOPT_TIMEOUT => 10
         );
         
-        if (!empty($_SERVER['HTTP_USER_AGENT'])){
-            $options[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
-        }
+        $options[CURLOPT_USERAGENT] = php_uname('s').':'.redditConfig::$CLIENT_ID.':'.redditConfig::$CLIENT_USERAGENT;
         
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;
@@ -695,7 +739,7 @@ class reddit{
             $options[CURLOPT_SSL_VERIFYPEER] = false;
             $options[CURLOPT_SSL_VERIFYHOST] = 2;
         }
-        
+
         curl_setopt_array($ch, $options);
         $apiResponse = curl_exec($ch);
         $response = json_decode($apiResponse);
@@ -705,8 +749,16 @@ class reddit{
             $response = $apiResponse;    
         }
         curl_close($ch);
-        
+                
         return $response;
+    }
+    
+    private function loadData() {
+      self::$data = file_exists('tokens.json') ?
+          json_decode(file_get_contents('tokens.json'), true) : array();
+    }
+    private function saveData() {
+      file_put_contents('tokens.json', json_encode(self::$data));
     }
 }
 ?>
