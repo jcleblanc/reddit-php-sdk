@@ -672,9 +672,7 @@ class reddit{
             CURLOPT_TIMEOUT => 10
         );
         
-        if (!empty($_SERVER['HTTP_USER_AGENT'])){
-            $options[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
-        }
+        $options[CURLOPT_USERAGENT] = php_uname('s').':'.redditConfig::$CLIENT_ID.':'.redditConfig::$CLIENT_USERAGENT;
         
         if ($postVals != null){
             $options[CURLOPT_POSTFIELDS] = $postVals;

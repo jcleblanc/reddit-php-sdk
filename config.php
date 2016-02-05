@@ -10,6 +10,7 @@ class redditConfig{
     //access token configuration from https://ssl.reddit.com/prefs/apps
     static $CLIENT_ID = 'YOUR CLIENT ID';
     static $CLIENT_SECRET = 'YOUR SECRET';
+    static $CLIENT_USERAGENT = 'v0 (by /u/YOUR_USERNAME)';
     
     //access token request scopes
     //full list at http://www.reddit.com/dev/api/oauth
