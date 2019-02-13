@@ -14,5 +14,12 @@ class redditConfig{
     //access token request scopes
     //full list at http://www.reddit.com/dev/api/oauth
     static $SCOPES = 'save,modposts,identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,submit,subscribe,vote,wikiedit,wikiread';
+        
+    // for permanent token - refresh token
+    
+    // https://www.reddit.com/r/redditdev/comments/3g8u2t/how_to_get_permanent_access_token_for_reddit/
+    static $GRANT_TYPE = 'authorization_code';
+    static $GRANT_TYPE_REFRESH = 'refresh_token';
+    static $DURATION = 'permanent';
 }
 ?>
