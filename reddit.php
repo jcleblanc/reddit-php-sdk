@@ -11,6 +11,7 @@ require_once("config.php");
 */
 class reddit{
     private $access_token;
+    private $refresh_token;
     private $token_type;
     private $auth_mode = 'basic';
     
@@ -30,10 +31,13 @@ class reddit{
                 //capture code from auth
                 $code = $_GET["code"];
                 
-                //construct POST object for access token fetch request
-                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=authorization_code",
+                //construct POST object for access token fetch request - permanent token
+                $postvals = sprintf("code=%s&redirect_uri=%s&grant_type=%s&duration=%s",
                                     $code,
-                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT);
+                                    redditConfig::$ENDPOINT_OAUTH_REDIRECT,
+                                    redditConfig::$GRANT_TYPE,
+                                    redditConfig::$DURATION
+                                );
                 
                 //get JSON access token object (with refresh_token parameter)
                 $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
@@ -42,6 +46,7 @@ class reddit{
                 if (isset($token->access_token)){
                     $this->access_token = $token->access_token;
                     $this->token_type = $token->token_type;
+                    $this->refresh_token = $token->refresh_token;
                     
                     //set token cookie for later use
                     $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
@@ -66,6 +71,33 @@ class reddit{
         
         //set auth mode for requests
         $this->auth_mode = 'oauth';
+    }
+
+    /* refresh token */
+    public function getAccessTokenRefresh($refresh_token=''){
+
+        // if refresh token not exists return
+        if($refresh_token) $this->refresh_token = $refresh_token;
+        else return false;
+        
+        $this->auth_mode = 'basic';
+
+        $postvals = sprintf("grant_type=%s&refresh_token=%s",
+                        redditConfig::$GRANT_TYPE_REFRESH,
+                        $this->refresh_token
+                    );
+
+        $token = self::runCurl(redditConfig::$ENDPOINT_OAUTH_TOKEN, $postvals, null, true);
+        
+        if (isset($token->access_token)){
+            $this->access_token = $token->access_token;
+            $this->token_type = $token->token_type;
+            $cookie_time = 60 * 59 + time();  //seconds * minutes = 59 minutes (token expires in 1hr) 
+            setcookie('reddit_token', "{$this->token_type}:{$this->access_token}", $cookie_time); 
+        }
+
+        $this->auth_mode = 'oauth';
+
     }
     
     /**
